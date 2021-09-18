@@ -2,8 +2,8 @@
 
 void Line::transform(
     HDC& hdc,
-    const double& coordinate_x,
-    const double& coordinate_y,
+    const int& coordinate_x,
+    const int& coordinate_y,
     const int& size_x,
     const int& size_y
 )
@@ -12,8 +12,24 @@ void Line::transform(
 
 void Line::move(
     HDC& hdc,
-    const double& coordinate_x,
-    const double& coordinate_y
+    const int& coordinate_x,
+    const int& coordinate_y
 )
 {
+    MoveToEx(hdc, coordinate_x, coordinate_y, nullptr);
+}
+
+void Line::resize(
+    HDC& hdc,
+    const int& size_x, 
+    const int& size_y)
+{
+}
+
+void Line::create(
+    HDC& hdc,
+    const int& coordinate_x,
+    const int& coordinate_y)
+{
+    LineTo(hdc, coordinate_x, coordinate_y);
 }

@@ -1,50 +1,58 @@
 #ifndef BASEENTITY
-#define BASEENTITY
-#include "BaseEntity.h"
+#define BASE_ENTITY
+#include "base_entity.h"
 class Line :
-    private BaseEntity
+    public base_entity
 {
 
 public:
 
-    Line() : BaseEntity()
+    Line() : base_entity()
     {
     }
 
     Line(
-        const double& coordinate_x,
-        const double& coordinate_y,
-        const int& size_x,
-        const int& size_y
+        HDC& hdc,
+        const int& coordinate_x,
+        const int& coordinate_y
     )
         :
-        BaseEntity(
+        base_entity(
             coordinate_x,
-            coordinate_y,
-            size_x,
-            size_y
+            coordinate_y
         )
     {
+	    Line::create(
+            hdc,
+			coordinate_x,
+            coordinate_y
+        );
     }
 
     void transform(
         HDC& hdc,
-        const double& coordinate_x,
-        const double& coordinate_y,
+        const int& coordinate_x,
+        const int& coordinate_y,
         const int& size_x,
         const int& size_y
     ) override;
 
     void move(
         HDC& hdc,
-        const double& coordinate_x,
-        const double& coordinate_y
+        const int& coordinate_x,
+        const int& coordinate_y
     ) override;
 
     void resize(
         HDC& hdc,
         const int& size_x,
         const int& size_y
+    ) override;
+private:
+    void create(
+        HDC& hdc,
+        const int& coordinate_x,
+        const int& coordinate_y
     ) override;
 };
 #endif

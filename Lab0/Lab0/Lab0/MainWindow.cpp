@@ -2,14 +2,17 @@
 #define UNICODE
 #endif 
 
-#include <windows.h>
+#include <Windows.h>
+#include <windowsx.h>
+#include <vector>
+#include "Line.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
     // Register the window class.
-    const wchar_t CLASS_NAME[] = L"Sample Window Class";
+    constexpr wchar_t CLASS_NAME[] = L"Sample Window Class";
 
     WNDCLASS wc = { };
 
@@ -21,7 +24,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     // Create the window.
 
-    HWND hwnd = CreateWindowEx(
+    const HWND hwnd = CreateWindowEx(
         0,                              // Optional window styles.
         CLASS_NAME,                     // Window class
         L"Learn to Program Windows",    // Window text
@@ -30,10 +33,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         // Size and position
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 
-        NULL,       // Parent window    
-        NULL,       // Menu
+        nullptr,       // Parent window    
+        nullptr,       // Menu
         hInstance,  // Instance handle
-        NULL        // Additional application data
+        nullptr
+        // Additional application data
     );
 
     if (hwnd == NULL)
@@ -57,6 +61,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+
+    auto* scene_objects = new std::vector<Line>();
+
     switch (uMsg)
     {
     case WM_DESTROY:
@@ -74,8 +81,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         EndPaint(hwnd, &ps);
     }
-    return 0;
+    break;
 
+    case WM_LBUTTONDOWN:
+    {
+
+        LineTo(GetDC(hwnd), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+        // HDC dc = GetDC(hwnd);
+        // auto* obj = new Line(
+        //     dc,
+        //     GET_X_LPARAM(lParam),
+        //     GET_Y_LPARAM(lParam)
+        // );
+        //
+        // scene_objects->push_back(
+        //     *obj
+        // );
+
+	}
+    break;
+    default: ;
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }

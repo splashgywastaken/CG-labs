@@ -1,44 +1,57 @@
 #pragma once
-#include "VideoEngineObject.h"
-class BaseEntity :
-	public VideoEngineObject
+#include "video_engine_object.h"
+class base_entity :
+	public video_engine_object
 {
 private:
-	double* coordinate_x_;
-	double* coordinate_y_;
+	int* coordinate_x_;
+	int* coordinate_y_;
 	int* size_x_;
 	int* size_y_;
 
 public:
 	//Constructors
-	BaseEntity() :
-		coordinate_x_(new double(0)),
-		coordinate_y_(new double(0)),
+	base_entity() :
+		coordinate_x_(new int(0)),
+		coordinate_y_(new int(0)),
 		size_x_(new int(0)),
 		size_y_(new int(0))
 	{
 	}
 
-	BaseEntity(
-		const double& value_coordinate_x,
-		const double& value_coordinate_y,
+	base_entity(
+		const int& value_coordinate_x,
+		const int& value_coordinate_y,
 		const int& value_size_x,
 		const int& value_size_y
 	) : 
-		coordinate_x_(new double(value_coordinate_x)),
-		coordinate_y_(new double(value_coordinate_y)),
+		coordinate_x_(new int(value_coordinate_x)),
+		coordinate_y_(new int(value_coordinate_y)),
 		size_x_(new int(value_size_x)),
 		size_y_(new int(value_size_y))
 	{
 	}
-	
+
+	base_entity(
+		const int& value_coordinate_x,
+		const int& value_coordinate_y
+	) :
+		coordinate_x_(new int(value_coordinate_x)),
+		coordinate_y_(new int(value_coordinate_y)),
+		size_x_(new int(0)),
+		size_y_(new int(0))
+	{
+	}
+
+protected:
+
 	//getters
-	double get_coordinate_x() const
+	int get_coordinate_x() const
 	{
 		return *coordinate_x_;
 	}
 
-	double get_coordinate_y() const
+	int get_coordinate_y() const
 	{
 		return *coordinate_y_;
 	}
@@ -55,14 +68,14 @@ public:
 
 	//setters
 	void set_coordinate_x(
-		double& value
+		int& value
 	)
 	{
 		this->coordinate_x_ = &value;
 	}
 
 	void set_coordinate_y(
-		double& value
+		int& value
 	)
 	{
 		this->coordinate_y_ = &value;
