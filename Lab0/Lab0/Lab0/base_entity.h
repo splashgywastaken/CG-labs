@@ -1,9 +1,9 @@
 #pragma once
 #include "video_engine_object.h"
 class base_entity :
-	public video_engine_object
+	virtual public video_engine_object
 {
-private:
+protected:
 	int* coordinate_x_;
 	int* coordinate_y_;
 	int* size_x_;

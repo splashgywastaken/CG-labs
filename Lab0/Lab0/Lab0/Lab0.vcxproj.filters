@@ -18,7 +18,7 @@
     <ClCompile Include="MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Line.cpp">
+    <ClCompile Include="line.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VideoEngineObject.cpp">
@@ -27,15 +27,21 @@
     <ClCompile Include="base_entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="square.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Line.h">
+    <ClInclude Include="line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="base_entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="video_engine_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="square.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

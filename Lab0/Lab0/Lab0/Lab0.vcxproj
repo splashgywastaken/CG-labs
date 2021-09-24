@@ -140,13 +140,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="base_entity.cpp" />
-    <ClCompile Include="Line.cpp" />
+    <ClCompile Include="line.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="square.cpp" />
     <ClCompile Include="VideoEngineObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_entity.h" />
-    <ClInclude Include="Line.h" />
+    <ClInclude Include="line.h" />
+    <ClInclude Include="square.h" />
     <ClInclude Include="video_engine_object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

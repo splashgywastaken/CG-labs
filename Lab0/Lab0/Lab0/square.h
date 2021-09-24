@@ -1,54 +1,47 @@
-#ifndef LINE
-#define LINE
+#pragma once
 #include "base_entity.h"
-class line final :
+class square :
     public base_entity
 {
 
+    square() : base_entity()
+    {
+
+    }
+
 public:
-
-    line() : base_entity()
+    square(
+        const int& value_coordinate_x,
+        const int& value_coordinate_y,
+        const int& value_size_x,
+        const int& value_size_y
+    )
+        : base_entity(
+            value_coordinate_x,
+            value_coordinate_y,
+            value_size_x,
+            value_size_y
+        )
     {
     }
 
-    line(
+    square(
         HDC& hdc,
-        const int& coordinate_x,
-        const int& coordinate_y
+        const int& value_coordinate_x,
+        const int& value_coordinate_y
     )
-        :
-        base_entity(
-            coordinate_x,
-            coordinate_y
+        : base_entity(
+            value_coordinate_x,
+            value_coordinate_y
         )
     {
-	    this->create(
-            hdc,
-			coordinate_x,
-            coordinate_y
-        );
-    }
 
-	line(
-        HDC& hdc,
-        const int& coordinate_first_x,
-        const int& coordinate_first_y,
-        const int& coordinate_second_x,
-        const int& coordinate_second_y
-    )
-        :
-        base_entity(
-            coordinate_first_x,
-            coordinate_first_y
-        )
-    {
-	    this->create(
+        this->create(
             hdc,
-			coordinate_first_x,
-            coordinate_first_y,
-            coordinate_second_x,
-            coordinate_second_y
+            value_coordinate_x,
+            value_coordinate_y
         );
+
     }
 
     void transform(
@@ -71,8 +64,6 @@ public:
         const int& size_y
     ) override;
 
-    void clear(HDC dc) override;
-private:
     void create(
         HDC& hdc,
         const int& coordinate_x,
@@ -87,4 +78,4 @@ private:
 	    const int& coordinate_second_y
     ) override;
 };
-#endif
+

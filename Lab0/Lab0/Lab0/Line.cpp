@@ -1,6 +1,6 @@
-#include "Line.h"
+#include "line.h"
 
-void Line::transform(
+void line::transform(
     HDC& hdc,
     const int& coordinate_x,
     const int& coordinate_y,
@@ -10,7 +10,7 @@ void Line::transform(
 {
 }
 
-void Line::move(
+void line::move(
     HDC& hdc,
     const int& coordinate_x,
     const int& coordinate_y
@@ -19,17 +19,47 @@ void Line::move(
     MoveToEx(hdc, coordinate_x, coordinate_y, nullptr);
 }
 
-void Line::resize(
+void line::resize(
     HDC& hdc,
     const int& size_x, 
     const int& size_y)
 {
 }
 
-void Line::create(
+void line::clear(HDC dc)
+{
+    RECT r;
+    GetClientRect(WindowFromDC(dc), &r);
+    Rectangle(dc, -1, -1, r.right, r.bottom);
+}
+
+void line::create(
     HDC& hdc,
     const int& coordinate_x,
     const int& coordinate_y)
 {
     LineTo(hdc, coordinate_x, coordinate_y);
+}
+
+void line::create(
+    HDC& hdc,
+    const int& coordinate_first_x,
+    const int& coordinate_first_y,
+	const int& coordinate_second_x,
+    const int& coordinate_second_y
+)
+{
+
+    MoveToEx(
+        hdc,
+        coordinate_first_x,
+        coordinate_first_y,
+        nullptr
+    );
+    LineTo(
+        hdc,
+        coordinate_second_x,
+        coordinate_second_y
+    );
+
 }
