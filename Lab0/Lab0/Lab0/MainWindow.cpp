@@ -9,9 +9,9 @@
 #include <windowsx.h>
 #include <string>
 #include <vector>
-#include "line.h"
+#include "rectangle.h"
+#include "rectangle.h"
 
-line* scene_object = nullptr;
 auto* mouse_pos = new std::vector<POINT>();
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -22,7 +22,7 @@ void AddMenus(HWND& hwnd);
 bool display_confirmation_message_box(const char* message);
 int display_warning_message_box(const char* message);
 
-int delete_scene_object(line* object, HWND &hwnd);
+int delete_scene_object(HWND &hwnd);
 
 void set_first_coordinates(HWND& hwnd, DWORD flags);
 void set_second_coordinates(HWND& hwnd);
@@ -54,7 +54,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     const HWND hwnd = CreateWindowEx(
         0,                              // Optional window styles.
         CLASS_NAME,                     // Window class
-        L"Learn to Program Windows",    // Window text
+        L"Laba0",    // Window text
         WS_OVERLAPPEDWINDOW,            // Window style
 
         // Size and position
@@ -86,6 +86,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     return 0;
 }
 
+rectangle* scene_object = new rectangle(
+    50,
+    50,
+    100,
+    100
+);
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
@@ -105,30 +112,29 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_PAINT:
     {
-        PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hwnd, &ps);
 
-		
-
-        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
-        EndPaint(hwnd, &ps);
+        HDC dc = GetDC(hwnd);
+        delete_scene_object(hwnd);
+        scene_object->create(dc);
+        ReleaseDC(hwnd, dc);		
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
+       
     }
-    break;
 
     case WM_LBUTTONDOWN:
     {
 
-        if (GetKeyState(VK_MENU) & 0x8000) {
+        if (wParam == VK_CONTROL) 
+        {
+            //set_second_coordinates(hwnd);
 
-            set_second_coordinates(hwnd);
+            //HDC hdc = GetDC(hwnd);
 
-            HDC hdc = GetDC(hwnd);
+            //Code for a figure
+            /*if (scene_object == nullptr) {
+                
 
-            //Code for a Line
-            if (scene_object == nullptr) {
-                scene_object =
-                    new line(
+                    new rectangle(
                         hdc,
                         static_cast<int>(mouse_pos->at(0).x),
                         static_cast<int>(mouse_pos->at(0).y),
@@ -136,16 +142,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         static_cast<int>(mouse_pos->at(1).y)
                     );
             }
-        	/*else
-        	{
-                display_warning_message_box("Object had been already created.\nPlease, delete it firstly");
-        	}*/
+	        else
+	        {
+				display_warning_message_box("Object had been already created.\nPlease, delete it firstly");
+	        }*/
+
+
 
         }
-        else
+        /*else
         {
             set_first_coordinates(hwnd, true);
-        }
+        }*/
 	}
     break;
 
@@ -157,26 +165,53 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_KEYDOWN:
     {
-
+        HDC dc = GetDC(hwnd);
         switch (wParam)
         {
 	        case VK_ESCAPE:
 		        {
 		            //if (display_confirmation_message_box("Do you realy want to delete an object?"))
-		            delete_scene_object(scene_object, hwnd);
+		            delete_scene_object(hwnd);
 		        }
 	            break;
 
-	        default:
-	            break;
+            case VK_LEFT:
+	            {
+	                scene_object->move(-2, 0);
+	            }
+            case VK_RIGHT:
+	            {
+					scene_object->move(2, 0);
+	            }
+			case VK_UP:
+				{
+					scene_object->move(0, 2);
+				}
+            case VK_DOWN:
+	            {
+					scene_object->move(0, -2);
+	            }
         }
-	    
+        InvalidateRect(hwnd, nullptr, false);
+        break;
 
 	}
-    break;
+
+    case WM_MOUSEWHEEL:
+    {
+        if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
+        {
+            scene_object->resize(1);
+        }
+        else
+        {
+            scene_object->resize(-1);
+        }
+    }
 
     default: ;
     }
+    InvalidateRect(hwnd, nullptr, false);
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
@@ -223,16 +258,16 @@ void AddMenus(HWND& hwnd)
 		
 }
 
-int delete_scene_object(line* object, HWND& hwnd)
+int delete_scene_object(HWND& hwnd)
 {
-    if (object != nullptr) {
 
-        object->clear(GetDC(hwnd));
-        delete object;
+    HDC dc = GetDC(hwnd);
+
+    RECT r;
+    GetClientRect(WindowFromDC(dc), &r);
+    Rectangle(dc, -1, -1, r.right, r.bottom);
         return 0;
-    }
-
-    return -1;
+   
 }
 
 void set_first_coordinates(HWND& hwnd, DWORD flags)

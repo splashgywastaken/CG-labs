@@ -60,15 +60,12 @@ public:
     ) override;
 
     void move(
-        HDC& hdc,
-        const int& coordinate_x,
-        const int& coordinate_y
+        int coordinate_x,
+        int coordinate_y
     ) override;
 
     void resize(
-        HDC& hdc,
-        const int& size_x,
-        const int& size_y
+        int resize_param
     ) override;
 
     void clear(HDC dc) override;
@@ -87,4 +84,5 @@ private:
 	    const int& coordinate_second_y
     ) override;
 };
+
 #endif

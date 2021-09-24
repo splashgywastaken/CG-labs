@@ -11,18 +11,15 @@ void line::transform(
 }
 
 void line::move(
-    HDC& hdc,
-    const int& coordinate_x,
-    const int& coordinate_y
+    int coordinate_x,
+    int coordinate_y
 )
 {
-    MoveToEx(hdc, coordinate_x, coordinate_y, nullptr);
 }
 
 void line::resize(
-    HDC& hdc,
-    const int& size_x, 
-    const int& size_y)
+    int resize_param
+)
 {
 }
 

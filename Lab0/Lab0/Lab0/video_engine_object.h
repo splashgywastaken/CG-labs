@@ -14,15 +14,12 @@ public:
 	) = 0;
 
 	virtual void move(
-		HDC& hdc,
-		const int& coordinate_x,
-		const int& coordinate_y
+		int coordinate_x,
+		int coordinate_y
 	) = 0;
 
 	virtual void resize(
-		HDC& hdc,
-		const int& size_x,
-		const int& size_y
+		int resize_param
 	) = 0;
 
 	virtual void clear(HDC dc) = 0;
