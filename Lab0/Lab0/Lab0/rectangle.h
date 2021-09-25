@@ -45,7 +45,7 @@ public:
         int resize_param
     ) override;
 
-    const int create(
+    int create(
         HDC& hdc
     );
 

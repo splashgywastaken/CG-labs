@@ -99,7 +99,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:
         PostQuitMessage(0);
-        return 0;
+        break;
 
     case WM_CREATE:
 	{
@@ -114,8 +114,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
 
         HDC dc = GetDC(hwnd);
+
         delete_scene_object(hwnd);
         scene_object->create(dc);
+
         ReleaseDC(hwnd, dc);		
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
        
@@ -165,7 +167,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_KEYDOWN:
     {
-        HDC dc = GetDC(hwnd);
         switch (wParam)
         {
 	        case VK_ESCAPE:
@@ -179,23 +180,32 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	            {
 	                scene_object->move(-2, 0);
 	            }
+                break;
             case VK_RIGHT:
 	            {
 					scene_object->move(2, 0);
 	            }
+                break;
 			case VK_UP:
 				{
-					scene_object->move(0, 2);
+					scene_object->move(0, -2);
 				}
+                break;
             case VK_DOWN:
 	            {
-					scene_object->move(0, -2);
+					scene_object->move(0, +2);
 	            }
+                break;
+            default: ;
+
+            
+            
         }
+
         InvalidateRect(hwnd, nullptr, false);
-        break;
 
 	}
+    break;
 
     case WM_MOUSEWHEEL:
     {
@@ -207,9 +217,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             scene_object->resize(-1);
         }
+        InvalidateRect(hwnd, nullptr, false);
+        break;
     }
+    
 
     default: ;
+        break;
     }
     InvalidateRect(hwnd, nullptr, false);
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
