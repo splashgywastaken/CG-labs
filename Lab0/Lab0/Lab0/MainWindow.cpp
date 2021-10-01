@@ -4,12 +4,15 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+//constants
+constexpr int MOVE_POINTS = 4;
+constexpr int RESIZE_POINTS = 4;
+
 #include <clocale>
 #include <Windows.h>
 #include <windowsx.h>
 #include <string>
 #include <vector>
-#include "rectangle.h"
 #include "rectangle.h"
 
 auto* mouse_pos = new std::vector<POINT>();
@@ -102,12 +105,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return 0;
 
     case WM_CREATE:
-	{
+    {
 
         AddMenus(hwnd);
         AddControls(hwnd);
 
-	}
+    }
     break;
 
     case WM_PAINT:
@@ -116,50 +119,36 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         HDC dc = GetDC(hwnd);
         delete_scene_object(hwnd);
         scene_object->create(dc);
-        ReleaseDC(hwnd, dc);		
+        ReleaseDC(hwnd, dc);
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
-       
+
     }
 
     case WM_LBUTTONDOWN:
     {
+		GetDC(hwnd);
+		POINT p;
+        p.x = GET_X_LPARAM(lParam);
+        p.y = GET_Y_LPARAM(lParam);
+        scene_object->dragging_start(p);
+    }
+    break;
 
-        if (wParam == VK_CONTROL) 
-        {
-            //set_second_coordinates(hwnd);
-
-            //HDC hdc = GetDC(hwnd);
-
-            //Code for a figure
-            /*if (scene_object == nullptr) {
-                
-
-                    new rectangle(
-                        hdc,
-                        static_cast<int>(mouse_pos->at(0).x),
-                        static_cast<int>(mouse_pos->at(0).y),
-                        static_cast<int>(mouse_pos->at(1).x),
-                        static_cast<int>(mouse_pos->at(1).y)
-                    );
-            }
-	        else
-	        {
-				display_warning_message_box("Object had been already created.\nPlease, delete it firstly");
-	        }*/
-
-
-
-        }
-        /*else
-        {
-            set_first_coordinates(hwnd, true);
-        }*/
-	}
+    case WM_MOUSEMOVE:
+    {
+        GetDC(hwnd);
+        POINT p;
+        p.x = GET_X_LPARAM(lParam);
+        p.y = GET_Y_LPARAM(lParam);
+        scene_object->drag(p);
+    }
+    InvalidateRect(hwnd, nullptr, false);
     break;
 
     case WM_LBUTTONUP:
     {
-
+        if (scene_object->is_dragged())
+            scene_object->dragging_stop();
     }
     break;
 
@@ -169,49 +158,52 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {
 	        case VK_ESCAPE:
-		        {
-		            //if (display_confirmation_message_box("Do you realy want to delete an object?"))
-		            delete_scene_object(hwnd);
-		        }
-	            break;
+	        {
+	            //if (display_confirmation_message_box("Do you realy want to delete an object?"))
+	            delete_scene_object(hwnd);
+	        }
+	        break;
 
-            case VK_LEFT:
-	            {
-	                scene_object->move(-2, 0);
-	            }
-            case VK_RIGHT:
-	            {
-					scene_object->move(2, 0);
-	            }
-			case VK_UP:
-				{
-					scene_object->move(0, 2);
-				}
-            case VK_DOWN:
-	            {
-					scene_object->move(0, -2);
-	            }
+	        case VK_LEFT:
+	        {
+	            scene_object->move(-MOVE_POINTS, 0);
+	            break;
+	        }
+	        case VK_RIGHT:
+	        {
+	            scene_object->move(MOVE_POINTS, 0);
+	            break;
+	        }
+	        case VK_UP:
+	        {
+	            scene_object->move(0, -MOVE_POINTS);
+	            break;
+	        }
+	        case VK_DOWN:
+	        {
+	            scene_object->move(0, MOVE_POINTS);
+	            break;
+	        }
         }
         InvalidateRect(hwnd, nullptr, false);
         break;
-
-	}
+    }
 
     case WM_MOUSEWHEEL:
     {
         if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
         {
-            scene_object->resize(1);
+            scene_object->resize(RESIZE_POINTS);
         }
         else
         {
-            scene_object->resize(-1);
+            scene_object->resize(-RESIZE_POINTS);
         }
+        InvalidateRect(hwnd, nullptr, false);
+        break;
     }
-
-    default: ;
+    
     }
-    InvalidateRect(hwnd, nullptr, false);
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 

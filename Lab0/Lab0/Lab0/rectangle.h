@@ -5,6 +5,9 @@
 class rectangle :
     public base_entity
 {
+
+    bool _draggable = false;
+
 public:
     static void set_offsets(int coordinates[2][4], const std::vector<POINT>& mouse_pos);
 
@@ -48,6 +51,15 @@ public:
     const int create(
         HDC& hdc
     );
+
+    bool is_inner_point(const POINT& p);
+    bool is_dragged();
+
+    void dragging_start(const POINT& p);
+
+    void drag(const POINT& p);
+
+    void dragging_stop();
 
     void create(HDC& hdc, const int& coordinate_first_x, const int& coordinate_first_y, const int& coordinate_second_x,
 	    const int& coordinate_second_y) override;

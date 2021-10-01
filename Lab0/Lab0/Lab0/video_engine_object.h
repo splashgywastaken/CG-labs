@@ -37,5 +37,6 @@ public:
 		const int& coordinate_second_x,
 		const int& coordinate_second_y
 	) = 0;
+	
 };
 #endif

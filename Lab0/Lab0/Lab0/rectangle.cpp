@@ -39,8 +39,56 @@ const int rectangle::create(
 	return 1;
 }
 
+bool rectangle::is_inner_point(const POINT& p)
+{
+
+		int x = get_coordinate_x() + get_size_x();
+		int y = get_coordinate_y() + get_size_y();
+
+		return
+			p.x < x&& p.y < y
+			&&
+			p.x > get_coordinate_x() && p.y > get_coordinate_y()
+			;
+
+}
+
+bool rectangle::is_dragged()
+{
+
+	return _draggable;
+
+}
+
+void rectangle::dragging_start(const POINT& p)
+{
+
+	if (is_inner_point(p))
+	{
+		_draggable = true;
+	}
+
+}
+
+void rectangle::drag(const POINT& p)
+{
+	if (_draggable) 
+	{
+		set_coordinate_x(p.x);
+		set_coordinate_y(p.y);
+	}
+
+}
+
+void rectangle::dragging_stop()
+{
+
+	_draggable = false;
+
+}
+
 void rectangle::create(HDC& hdc, const int& coordinate_first_x, const int& coordinate_first_y,
-	const int& coordinate_second_x, const int& coordinate_second_y)
+                       const int& coordinate_second_x, const int& coordinate_second_y)
 {
 }
 
