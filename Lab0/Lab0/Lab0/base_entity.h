@@ -58,7 +58,7 @@ protected:
 	//getters
 	int get_coordinate_x() const
 	{
-		return *coordinate_x_;
+		return coordinate_x_;
 	}
 
 	int get_coordinate_y() const
