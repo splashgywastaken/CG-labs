@@ -17,6 +17,10 @@ public:
 		size_x_(0),
 		size_y_(0)
 	{
+		coordinate_x_ = 0;
+		coordinate_y_ = 0;
+		size_x_ = 0;
+		size_y_ = 0;
 	}
 
 	base_entity(
@@ -30,6 +34,12 @@ public:
 		size_x_(value_size_x),
 		size_y_(value_size_y)
 	{
+
+		coordinate_x_ = value_coordinate_x;
+		coordinate_y_ = value_coordinate_y;
+		size_x_ = value_size_x;
+		size_y_ = value_size_y;
+
 	}
 
 	base_entity(
@@ -48,7 +58,7 @@ protected:
 	//getters
 	int get_coordinate_x() const
 	{
-		return coordinate_x_;
+		return *coordinate_x_;
 	}
 
 	int get_coordinate_y() const

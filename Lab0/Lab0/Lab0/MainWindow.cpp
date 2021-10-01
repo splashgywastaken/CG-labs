@@ -102,7 +102,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:
         PostQuitMessage(0);
-        return 0;
+        break;
 
     case WM_CREATE:
     {
@@ -117,6 +117,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
 
         HDC dc = GetDC(hwnd);
+
         delete_scene_object(hwnd);
         scene_object->create(dc);
         ReleaseDC(hwnd, dc);
@@ -154,7 +155,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_KEYDOWN:
     {
-        HDC dc = GetDC(hwnd);
         switch (wParam)
         {
 	        case VK_ESCAPE:
@@ -185,6 +185,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	            break;
 	        }
         }
+
         InvalidateRect(hwnd, nullptr, false);
         break;
     }

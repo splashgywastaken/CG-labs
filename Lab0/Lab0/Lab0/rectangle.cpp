@@ -25,7 +25,7 @@ void rectangle::resize(int resize_param)
 
 }
 
-const int rectangle::create(
+int rectangle::create(
 	HDC& hdc
 )
 {
