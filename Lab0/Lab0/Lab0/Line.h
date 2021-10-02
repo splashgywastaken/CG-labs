@@ -22,7 +22,7 @@ public:
             coordinate_y
         )
     {
-	    this->create(
+	    this->draw(
             hdc,
 			coordinate_x,
             coordinate_y
@@ -42,7 +42,7 @@ public:
             coordinate_first_y
         )
     {
-	    this->create(
+	    this->draw(
             hdc,
 			coordinate_first_x,
             coordinate_first_y,
@@ -70,13 +70,13 @@ public:
 
     void clear(HDC dc) override;
 private:
-    void create(
+    void draw(
         HDC& hdc,
         const int& coordinate_x,
         const int& coordinate_y
     ) override;
 
-    void create(
+    void draw(
         HDC& hdc,
         const int& coordinate_first_x,
         const int& coordinate_first_y,

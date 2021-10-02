@@ -7,6 +7,7 @@ class rectangle :
 {
 
     bool _draggable = false;
+    POINT drag_coordinates;
 
 public:
     static void set_offsets(int coordinates[2][4], const std::vector<POINT>& mouse_pos);
@@ -48,7 +49,7 @@ public:
         int resize_param
     ) override;
 
-    int create(
+    int draw(
         HDC& hdc
     );
 
@@ -61,9 +62,9 @@ public:
 
     void dragging_stop();
 
-    void create(HDC& hdc, const int& coordinate_first_x, const int& coordinate_first_y, const int& coordinate_second_x,
+    void draw(HDC& hdc, const int& coordinate_first_x, const int& coordinate_first_y, const int& coordinate_second_x,
 	    const int& coordinate_second_y) override;
     void clear(HDC dc) override;
-    void create(HDC& hdc, const int& coordinate_x, const int& coordinate_y) override;
+    void draw(HDC& hdc, const int& coordinate_x, const int& coordinate_y) override;
 };
 #endif

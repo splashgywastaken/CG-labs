@@ -30,7 +30,7 @@ void line::clear(HDC dc)
     Rectangle(dc, -1, -1, r.right, r.bottom);
 }
 
-void line::create(
+void line::draw(
     HDC& hdc,
     const int& coordinate_x,
     const int& coordinate_y)
@@ -38,7 +38,7 @@ void line::create(
     LineTo(hdc, coordinate_x, coordinate_y);
 }
 
-void line::create(
+void line::draw(
     HDC& hdc,
     const int& coordinate_first_x,
     const int& coordinate_first_y,

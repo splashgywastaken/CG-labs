@@ -24,13 +24,13 @@ public:
 
 	virtual void clear(HDC dc) = 0;
 
-	virtual void create(
+	virtual void draw(
 		HDC& hdc,
 		const int& coordinate_x,
 		const int& coordinate_y
 	) = 0;
 
-	virtual void create(
+	virtual void draw(
 		HDC& hdc,
 		const int& coordinate_first_x,
 		const int& coordinate_first_y,

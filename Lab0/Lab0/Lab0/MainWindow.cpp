@@ -119,7 +119,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         HDC dc = GetDC(hwnd);
 
         delete_scene_object(hwnd);
-        scene_object->create(dc);
+        scene_object->draw(dc);
         ReleaseDC(hwnd, dc);
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
 

@@ -25,7 +25,7 @@ void rectangle::resize(int resize_param)
 
 }
 
-int rectangle::create(
+int rectangle::draw(
 	HDC& hdc
 )
 {
@@ -65,6 +65,8 @@ void rectangle::dragging_start(const POINT& p)
 
 	if (is_inner_point(p))
 	{
+		drag_coordinates.x = p.x - get_coordinate_x();
+		drag_coordinates.y = p.y - get_coordinate_y();
 		_draggable = true;
 	}
 
@@ -74,8 +76,8 @@ void rectangle::drag(const POINT& p)
 {
 	if (_draggable) 
 	{
-		set_coordinate_x(p.x);
-		set_coordinate_y(p.y);
+		set_coordinate_x(p.x - drag_coordinates.x);
+		set_coordinate_y(p.y - drag_coordinates.y);
 	}
 
 }
@@ -87,7 +89,7 @@ void rectangle::dragging_stop()
 
 }
 
-void rectangle::create(HDC& hdc, const int& coordinate_first_x, const int& coordinate_first_y,
+void rectangle::draw(HDC& hdc, const int& coordinate_first_x, const int& coordinate_first_y,
                        const int& coordinate_second_x, const int& coordinate_second_y)
 {
 }
@@ -96,7 +98,7 @@ void rectangle::clear(HDC dc)
 {
 }
 
-void rectangle::create(HDC& hdc, const int& coordinate_x, const int& coordinate_y)
+void rectangle::draw(HDC& hdc, const int& coordinate_x, const int& coordinate_y)
 {
 }
 
