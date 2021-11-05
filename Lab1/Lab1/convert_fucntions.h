@@ -9,25 +9,25 @@ static class convert_functions
 
 public:
 
-	static PointDouble world_to_screen(PointDouble pointw, int L, int R, int T, int B, int W, int H)
+	static POINT world_to_screen(PointDouble point_world, PointDouble point_world0_in_screen, double pixel_x, double pixel_y)
 	{
 
-		POINT result;
+		POINT result{};
 
-		result.x = static_cast<int>((pointw.x - L) / (R - L) * W);
-		result.y = static_cast<int>((T - pointw.y) / (T - B) * H);
+		result.x = static_cast<LONG>(point_world0_in_screen.x + pixel_x * point_world.x);
+		result.y = static_cast<LONG>(point_world0_in_screen.y - pixel_y * point_world.y);
 
 		return result;
 
 	}
 
-	static PointDouble screen_to_world(POINT points, int L, int R, int T, int B, int W, int H)
+	static PointDouble screen_to_world(POINT point_screen, PointDouble point_world0_in_screen, double pixel_x, double pixel_y)
 	{
 
 		PointDouble result;
 
-		result.x = L + (R - L) * points.x / W;
-		result.y = T - (T - B) * points.y / H;
+		result.x = (point_screen.x - point_world0_in_screen.x + 0.5) / pixel_x;
+		result.y = -(point_screen.y - point_world0_in_screen.y + 0.5) / pixel_y;
 
 		return result;
 

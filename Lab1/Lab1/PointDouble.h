@@ -1,4 +1,5 @@
 #pragma once
+#include "framework.h"
 
 struct PointDouble
 {
@@ -6,7 +7,7 @@ struct PointDouble
 	double x,
 		   y;
 
-	PointDouble(){}
+	PointDouble() { x = 0, y = 0; }
 
 	PointDouble(const POINT& point)
 	{

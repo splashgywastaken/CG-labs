@@ -24,6 +24,8 @@
 //
 
 #include "framework.h"
+#include <Windows.h>
+#include <windowsx.h>
 #include "Lab1.h"
 #include <vector>
 
@@ -38,10 +40,13 @@ class camera_2d;
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
+const double RESIZE_K = 0.1;
 
 //Объекты сцены
 std::vector<graph_2d*> graphs_vector;
+//Объект фокуса
 graph_2d* focused;
+//Камера
 camera_2d* camera2d;
 
 // Отправить объявления функций, включенных в этот модуль кода:
@@ -53,6 +58,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 int draw_scene_objects(HDC dc);
 int load_camera(HDC dc);
 int add_new_graph(const POINT& pos0, const std::string& graph_type, const PointDouble& params);
+int resize_graph(WPARAM wParam, LPARAM lParam);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -149,7 +155,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    // Загружаем объект камеры
    load_camera( GetDC(hWnd) );
    //Загружаем график для отрисовки (в следующей версии предположительно данный функционал будет по нажатию клавиши)
-   add_new_graph(POINT{ 0,0 }, "cicloida", PointDouble{1,1});
+   add_new_graph(POINT{ 0,0 }, "cicloidA", PointDouble{1,1});
 
    UpdateWindow(hWnd);
 
@@ -192,17 +198,75 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
-            
+
+            //Очистка экрана
+            camera_2d::clear_window(hdc);
+
             //Функция для прорисовки объектов на сцене
             draw_scene_objects(hdc);
             EndPaint(hWnd, &ps);
         }
         break;
+
+    case WM_MOUSEWHEEL:
+	    {
+        
+	        const POINT mouse_pos{
+	               GET_X_LPARAM(lParam),
+	               GET_Y_LPARAM(lParam)
+	        };
+            
+	        if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
+	        {
+	            camera2d->resize(1 + RESIZE_K, mouse_pos);
+	        }
+	        else
+	        {
+	            camera2d->resize(1 - RESIZE_K, mouse_pos);
+	        }
+			InvalidateRect(hWnd, nullptr, false);
+		        
+	    }
+    	break;
+
     case WM_LBUTTONDOWN:
 	    {
-	        
+
+	        camera2d->start_dragging(
+	            PointDouble{
+	                GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)
+	            }
+	        );
+
 	    }
         break;
+
+    case WM_MOUSEMOVE:
+	    {
+
+			if (camera2d->is_dragging())
+			{
+
+                camera2d->drag(
+                    PointDouble{
+                    GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)
+                    }
+                );
+
+			}
+            InvalidateRect(hWnd, nullptr, false);
+
+	    }
+        break;
+
+    case WM_LBUTTONUP:
+	    {
+
+			camera2d->stop_dragging();
+
+	    }
+        break;
+
     case WM_SIZE:
 	    {
 	        if (camera2d != nullptr) {
@@ -217,6 +281,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	                r.right,
 	                r.bottom
 	            );
+                ReleaseDC( hWnd, dc);
+                InvalidateRect(hWnd, nullptr, false);
 	        }
 
 	    }
@@ -258,12 +324,11 @@ int load_camera(HDC dc)
     camera2d = new camera_2d(
         r.right,
         r.bottom,
-        -16,
-        16,
-        9,
-        -9,
-        0,
-        0
+        -8,
+        8,
+        4.5,
+        -4.5,
+        POINT{0,0}
     );
 
     return 1;
@@ -272,7 +337,7 @@ int load_camera(HDC dc)
 
 int add_new_graph(const POINT& pos0, const std::string& graph_type, const PointDouble& params)
 {
-
+    
     graphs_vector.push_back(
         new graph_2d(
             pos0.x,

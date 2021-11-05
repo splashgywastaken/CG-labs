@@ -38,8 +38,8 @@ void graph_2d::set_graph_type(std::string data, double _x_param, double _y_param
 
 			MessageBox(
 				GetActiveWindow(),
-				LPCWSTR("Your graph type was wrong"),
-				LPCWSTR("INPUT ERROR"),
+				reinterpret_cast<LPCWSTR>("Your graph type was wrong"),
+				reinterpret_cast<LPCWSTR>("INPUT ERROR"),
 				MB_ICONERROR
 			);
 
@@ -50,37 +50,54 @@ void graph_2d::set_graph_type(std::string data, double _x_param, double _y_param
 	}
 }
 
-void graph_2d::draw(HDC dc, int W , int H, double L, double R, double T, double B, double px_x, double px_y)
+void graph_2d::draw(HDC dc, PointDouble point_world0, double pixel_y, double pixel_x, double L, double R) const
 {
 
 
-	PointDouble draw_p{
+	PointDouble draw_point_world{
 		pos_x,
 		pos_y
+	};
+
+	POINT draw_point_screen{
+		0,
+		0
 	};
 
 	switch (graph_type){
 
 			case ELLIPSE:
 			{
+				const double step = static_cast<double>(1) / pixel_x;
+				double i = L + step;
 
-				draw_p.x = this->x_param * cos(1);
-				draw_p.y = this->y_param * sin(1);
+				draw_point_world.x = this->x_param * cos(i);
+				draw_point_world.y = this->y_param * sin(i);
 
-				draw_p = convert_functions::world_to_screen(draw_p, L, R, T, B, W, H);
+				draw_point_screen = convert_functions::world_to_screen(
+					draw_point_world, point_world0, pixel_x, pixel_y
+				);
 
-				MoveToEx(dc, draw_p.x + pos_x, draw_p.y + pos_y, nullptr);
+				MoveToEx(
+					dc, draw_point_screen.x, draw_point_screen.y, nullptr
+				);
 
-				for (int i = 2; i < W; i++)
+				for (i; i < R + step; i+=step)
 				{
 
-					draw_p.x = this->x_param * cos(i);
-					draw_p.y = this->y_param * sin(i);
+					draw_point_world.x = this->x_param * cos(i);
+					draw_point_world.y = this->y_param * sin(i);
 
-					draw_p = convert_functions::world_to_screen(draw_p, L, R, T, B, W, H);
+					draw_point_screen = convert_functions::world_to_screen(
+						draw_point_world, point_world0, pixel_x, pixel_y
+					);
 
-					LineTo(dc, draw_p.x + pos_x, draw_p.y + pos_y);
-					MoveToEx(dc, draw_p.x + pos_x, draw_p.y + pos_y, nullptr);
+					LineTo(
+						dc, draw_point_screen.x, draw_point_screen.y
+					);
+					MoveToEx(
+						dc, draw_point_screen.x, draw_point_screen.y, nullptr
+					);
 
 				}
 
@@ -90,23 +107,36 @@ void graph_2d::draw(HDC dc, int W , int H, double L, double R, double T, double 
 			case ASTROIDA:
 			{
 
-				draw_p.x = this->x_param * pow(cos(1), 3);
-				draw_p.y = this->y_param * pow(sin(1), 3);
+				const double step = static_cast<double>(1) / pixel_x;
+				double i = L + step;
 
-				draw_p = convert_functions::world_to_screen(draw_p, L, R, T, B, W, H);
+				draw_point_world.x = this->x_param * pow(cos(i), 3);
+				draw_point_world.y = this->y_param * pow(sin(i), 3);
 
-				MoveToEx(dc, draw_p.x + pos_x, draw_p.y + pos_y, nullptr);
+				draw_point_screen = convert_functions::world_to_screen(
+					draw_point_world, point_world0, pixel_x, pixel_y
+				);
 
-				for (int i = 2; i < W; i++)
+				MoveToEx(
+					dc, draw_point_screen.x, draw_point_screen.y, nullptr
+				);
+
+				for (i; i < R + step; i += step)
 				{
 
-					draw_p.x = this->x_param * pow(cos(i), 3);
-					draw_p.y = this->y_param * pow(sin(i), 3);
-					
-					draw_p = convert_functions::world_to_screen(draw_p, L, R, T, B, W, H);
+					draw_point_world.x = this->x_param * pow(cos(i), 3);
+					draw_point_world.y = this->y_param * pow(sin(i), 3);
 
-					LineTo(dc, draw_p.x, draw_p.y);
-					MoveToEx(dc, draw_p.x, draw_p.y, nullptr);
+					draw_point_screen = convert_functions::world_to_screen(
+						draw_point_world, point_world0, pixel_x, pixel_y
+					);
+
+					LineTo(
+						dc, draw_point_screen.x, draw_point_screen.y
+					);
+					MoveToEx(
+						dc, draw_point_screen.x, draw_point_screen.y, nullptr
+					);
 
 				}
 
@@ -116,27 +146,48 @@ void graph_2d::draw(HDC dc, int W , int H, double L, double R, double T, double 
 			case CICLOIDA:
 			{
 
-				draw_p.x = this->x_param * (1 - sin(1));
-				draw_p.y = this->y_param * (1 - cos(1));
+				const double step = static_cast<double>(1) / pixel_x;
+				double i = L + step;
 
-				draw_p = convert_functions::world_to_screen(draw_p, L, R, T, B, W, H);
+				draw_point_world.x = this->x_param * (i - sin(i));
+				draw_point_world.y = this->y_param * (1 - cos(i));
 
-				MoveToEx(dc, draw_p.x + pos_x, draw_p.y + pos_y, nullptr);
+				draw_point_screen = convert_functions::world_to_screen(
+					draw_point_world, point_world0, pixel_x, pixel_y
+				);
 
-				for (int i = 2; i < W; i++)
+				MoveToEx(
+					dc, draw_point_screen.x, draw_point_screen.y, nullptr
+				);
+
+				for (i; i < R + step; i += step)
 				{
 
-					draw_p.x = this->x_param * ( i - sin(i) );
-					draw_p.y = this->y_param * ( 1 - cos(i) );
+					draw_point_world.x = this->x_param * (i - sin(i));
+					draw_point_world.y = this->y_param * (1 - cos(i));
 
-					draw_p = convert_functions::world_to_screen(draw_p, L, R, T, B, W, H);
+					draw_point_screen = convert_functions::world_to_screen(
+						draw_point_world, point_world0, pixel_x, pixel_y
+					);
 
-					LineTo(dc, draw_p.x, draw_p.y);
-					MoveToEx(dc, draw_p.x, draw_p.y, nullptr);
+					LineTo(
+						dc, draw_point_screen.x, draw_point_screen.y
+					);
+					MoveToEx(
+						dc, draw_point_screen.x, draw_point_screen.y, nullptr
+					);
 
 				}
 
 			}
 			break;
 	}
+}
+
+void graph_2d::move(POINT new_point)
+{
+
+	pos_x = new_point.x;
+	pos_y = new_point.y;
+
 }
