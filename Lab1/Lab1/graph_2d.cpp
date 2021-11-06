@@ -33,13 +33,24 @@ void graph_2d::set_graph_type(std::string data, double _x_param, double _y_param
 			graph_type = CICLOIDA;
 
 		}
+		else if (data == "parabola")
+		{
+			graph_type = PARABOLA;
+		}
+		else if (data == "rose")
+		{
+			graph_type = ROSE;
+		}
 		else
 		{
 
+			LPCWSTR title = (LPCWSTR)"Your graph type was wrong";
+			LPCWSTR text = (LPCWSTR)"INPUT ERROR";
+
 			MessageBox(
 				GetActiveWindow(),
-				reinterpret_cast<LPCWSTR>("Your graph type was wrong"),
-				reinterpret_cast<LPCWSTR>("INPUT ERROR"),
+				title,
+				text,
 				MB_ICONERROR
 			);
 
@@ -165,6 +176,92 @@ void graph_2d::draw(HDC dc, PointDouble point_world0, double pixel_y, double pix
 
 					draw_point_world.x = this->x_param * (i - sin(i));
 					draw_point_world.y = this->y_param * (1 - cos(i));
+
+					draw_point_screen = convert_functions::world_to_screen(
+						draw_point_world, point_world0, pixel_x, pixel_y
+					);
+
+					LineTo(
+						dc, draw_point_screen.x, draw_point_screen.y
+					);
+					MoveToEx(
+						dc, draw_point_screen.x, draw_point_screen.y, nullptr
+					);
+
+				}
+
+			}
+			break;
+
+			case PARABOLA:
+			{
+
+				const double step = static_cast<double>(1) / pixel_x;
+				double i = L + step;
+
+				draw_point_world.x = this->x_param * i;
+				draw_point_world.y = this->y_param * (draw_point_world.x * draw_point_world.x);
+
+				draw_point_screen = convert_functions::world_to_screen(
+					draw_point_world, point_world0, pixel_x, pixel_y
+				);
+
+				MoveToEx(
+					dc, draw_point_screen.x, draw_point_screen.y, nullptr
+				);
+
+				for (i; i < R + step; i += step)
+				{
+
+					draw_point_world.x = this->x_param * i;
+					draw_point_world.y = this->y_param * (draw_point_world.x * draw_point_world.x);
+
+					draw_point_screen = convert_functions::world_to_screen(
+						draw_point_world, point_world0, pixel_x, pixel_y
+					);
+
+					LineTo(
+						dc, draw_point_screen.x, draw_point_screen.y
+					);
+					MoveToEx(
+						dc, draw_point_screen.x, draw_point_screen.y, nullptr
+					);
+
+				}
+
+			}
+			break;
+
+			case ROSE:
+			{
+				
+				const double step = static_cast<double>(1) / pixel_x;
+				double i = L + step;
+
+				PointDouble draw_point_polar;
+
+				draw_point_polar.x = this->x_param * i;
+				draw_point_polar.y = this->y_param * cos(3 * draw_point_polar.x);
+
+				draw_point_world.x = draw_point_polar.y * cos(draw_point_polar.x);
+				draw_point_world.y = draw_point_polar.y * sin(draw_point_polar.x);
+
+				draw_point_screen = convert_functions::world_to_screen(
+					draw_point_world, point_world0, pixel_x, pixel_y
+				);
+
+				MoveToEx(
+					dc, draw_point_screen.x, draw_point_screen.y, nullptr
+				);
+
+				for (i; i < R + step; i += step)
+				{
+
+					draw_point_polar.x = this->x_param * i;
+					draw_point_polar.y = this->y_param * cos(3 * draw_point_polar.x);
+
+					draw_point_world.x = draw_point_polar.y * cos(draw_point_polar.x);
+					draw_point_world.y = draw_point_polar.y * sin(draw_point_polar.x);
 
 					draw_point_screen = convert_functions::world_to_screen(
 						draw_point_world, point_world0, pixel_x, pixel_y

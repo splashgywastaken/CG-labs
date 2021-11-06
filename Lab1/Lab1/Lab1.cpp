@@ -20,7 +20,6 @@
 //
 //Класс камера отвечает за хранение переменных с данными об окне юзера
 //Класс граф содержит данные о графе и способы реализации его в окне
-//Класс калькулятор можно написать будет чтобы проводить в нем все арифметические операции
 //
 
 #include "framework.h"
@@ -58,7 +57,6 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 int draw_scene_objects(HDC dc);
 int load_camera(HDC dc);
 int add_new_graph(const POINT& pos0, const std::string& graph_type, const PointDouble& params);
-int resize_graph(WPARAM wParam, LPARAM lParam);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -155,7 +153,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    // Загружаем объект камеры
    load_camera( GetDC(hWnd) );
    //Загружаем график для отрисовки (в следующей версии предположительно данный функционал будет по нажатию клавиши)
-   add_new_graph(POINT{ 0,0 }, "cicloidA", PointDouble{1,1});
+   add_new_graph(POINT{ 0,0 }, "rose", PointDouble{1,1});
 
    UpdateWindow(hWnd);
 
@@ -204,6 +202,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             //Функция для прорисовки объектов на сцене
             draw_scene_objects(hdc);
+
             EndPaint(hWnd, &ps);
         }
         break;
@@ -211,10 +210,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEWHEEL:
 	    {
         
-	        const POINT mouse_pos{
+	        POINT mouse_pos{
 	               GET_X_LPARAM(lParam),
 	               GET_Y_LPARAM(lParam)
 	        };
+            ScreenToClient(hWnd, &mouse_pos);
             
 	        if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
 	        {
