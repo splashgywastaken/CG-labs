@@ -21,18 +21,12 @@ void camera_2d::draw(HDC dc, graph_2d graph)
 
 int camera_2d::resize(double new_size, POINT screen_point)
 {
-	
-	point_world0_in_screen.x =
-		static_cast<LONG>(
-		screen_point.x - new_size * (
-				static_cast<double>(screen_point.x)	- static_cast<double>(point_world0_in_screen.x)
-				)
+
+	point_world0_in_screen.x = static_cast<LONG>(
+		static_cast<double>(screen_point.x) - new_size * (static_cast<double>(screen_point.x) - static_cast<double>(point_world0_in_screen.x))
 			);
-	point_world0_in_screen.y =
-		static_cast<LONG>(
-		screen_point.y - new_size * (
-				static_cast<double>(screen_point.y)	- static_cast<double>(point_world0_in_screen.y)
-				)
+	point_world0_in_screen.y = static_cast<LONG>(
+		static_cast<double>(screen_point.y) - new_size * (static_cast<double>(screen_point.y) - static_cast<double>(point_world0_in_screen.y))
 			);
 
 	pixel_x = pixel_x * new_size;
@@ -71,11 +65,11 @@ void camera_2d::on_window_size_change(int _W, int _H)
 		static_cast<LONG>(
 			static_cast<double>(_H) / static_cast<double>(2) * (multiplierH - multiplierW * multiplier_px)
 			+
-			static_cast<double>(point_world0_in_screen.y) * multiplierH * multiplier_px
+			static_cast<double>(point_world0_in_screen.y) * multiplierW * multiplier_px
 			);
 
-	pixel_y = pixel_x;
 	pixel_x = multiplierW * pixel_x;
+	pixel_y = pixel_x;
 
 }
 

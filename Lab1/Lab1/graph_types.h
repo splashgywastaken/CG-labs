@@ -3,6 +3,8 @@ enum graph_types
 {
 	ASTROIDA,
 	ELLIPSE,
-	CICLOIDA
+	CICLOIDA,
+	PARABOLA,
+	ROSE
 
 };

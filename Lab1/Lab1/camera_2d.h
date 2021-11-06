@@ -42,16 +42,15 @@ public:
 
         //Единоразовое задание размера пикселя при инициализации
 		pixel_x = 
-            W / (abs(r) + abs(l))
+            W / (abs(r - l))
             ;
 		pixel_y =
-            H / (abs(t) + abs(b))
+            H / (abs(t - b))
             ;
 
         //Координаты точки центра мировых координат в экранных координатах
         point_world0_in_screen.x = static_cast<LONG>((p0.x - l) / (r - l) * W);
         point_world0_in_screen.y = static_cast<LONG>((t - p0.y) / (t - b) * H);
-
     }
 
     //Основные функции
@@ -129,7 +128,7 @@ private:
 
 	double get_b() const
 	{
-        return ( static_cast<double>(point_world0_in_screen.x) - static_cast<double>(H) ) / pixel_y;
+        return ( static_cast<double>(point_world0_in_screen.y) - static_cast<double>(H) ) / pixel_y;
     }
 
 
