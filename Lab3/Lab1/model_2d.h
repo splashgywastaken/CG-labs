@@ -45,8 +45,8 @@ public:
 	}
 
 	void draw(
-		HDC dc,
-		POINT point0_in_world,
+		HDC& dc,
+		point_double point0_in_world,
 		point_double pixel,
 		double l,
 		double r

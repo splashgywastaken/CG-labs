@@ -4,7 +4,13 @@
 #include "draw_lines.h"
 #include "PointDouble.h"
 
-void model_2d::draw(HDC dc, POINT point_world0_in_screen, point_double pixel, double l, double r)
+void model_2d::draw(
+	HDC& dc,
+	const point_double point0_in_world,
+	const point_double pixel,
+	double l,
+	double r
+)
 {
 
 	const size_t m = edges_.n();
@@ -24,7 +30,7 @@ void model_2d::draw(HDC dc, POINT point_world0_in_screen, point_double pixel, do
 					dc,
 					point_double{ verticies_[i][0] * k_1, verticies_[i][1] * k_1 },
 					point_double{ verticies_[j][0] * k_2, verticies_[j][1] * k_2 },
-					point_world0_in_screen,
+					point0_in_world,
 					pixel
 				);
 
@@ -35,14 +41,14 @@ void model_2d::draw(HDC dc, POINT point_world0_in_screen, point_double pixel, do
 
 }
 
-void model_2d::resize(HDC dc, point_double new_size)
+void model_2d::resize(const HDC dc, const point_double new_size)
 {
 
 	//verticies_ = affine_transform::scaling(new_size, verticies_);
 	custom_resize(dc, new_size);
 }
 
-void model_2d::custom_resize(HDC dc, point_double new_size)
+void model_2d::custom_resize(HDC dc, const point_double new_size)
 {
 	verticies_ = affine_transform::custom_scaling(
 		new_size,
@@ -53,7 +59,7 @@ void model_2d::custom_resize(HDC dc, point_double new_size)
 	);
 }
 
-void model_2d::move(HDC dc, point_double vector)
+void model_2d::move(HDC dc, const point_double vector)
 {
 
 	verticies_ = affine_transform::parallel_move_by_vector(vector, verticies_);
@@ -61,7 +67,7 @@ void model_2d::move(HDC dc, point_double vector)
 
 }
 
-void model_2d::rotate(HDC dc, POINT rotation_type)
+void model_2d::rotate(HDC dc, const POINT rotation_type)
 {
 
 	verticies_ = affine_transform::rotation( rotation_type, verticies_);
@@ -72,7 +78,7 @@ void model_2d::rotate(HDC dc, POINT rotation_type)
 
 
 
-void model_2d::rotate(HDC dc, double radian)
+void model_2d::rotate(const HDC dc, const double radian)
 {
 
 	//verticies_ = affine_transform::rotation(radian, verticies_);
@@ -80,7 +86,7 @@ void model_2d::rotate(HDC dc, double radian)
 	custom_rotate(dc, radian);
 }
 
-void model_2d::custom_rotate(HDC dc, double radian) 
+void model_2d::custom_rotate(HDC dc, const double radian) 
 {
 	verticies_ = affine_transform::custom_rotation(
 		radian,
@@ -117,7 +123,7 @@ double model_2d::get_avg_x()
 {
 
 	double x = 0;
-	size_t n = verticies_.n();
+	const size_t n = verticies_.n();
 
 	for (size_t i = 0; i < n; i++)
 	{
@@ -132,7 +138,7 @@ double model_2d::get_avg_y()
 {
 
 	double y = 0;
-	size_t n = verticies_.n();
+	const size_t n = verticies_.n();
 
 	for (size_t i = 0; i < n; i++)
 	{
