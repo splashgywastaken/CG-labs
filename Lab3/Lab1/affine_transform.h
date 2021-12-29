@@ -1,7 +1,10 @@
 #ifndef AFFINE_TRANSFORM_H
 #define AFFINE_TRANSFORM_H
+#include "mirror_type_3d.h"
 #include "Matrix.h"
 #include "PointDouble.h"
+#include "point_double_3d.h"
+#include "rotation_type_3d.h"
 
 //Matrix<> Translation(double x, double y)
 //{
@@ -27,130 +30,33 @@
 class affine_transform
 {
 public:
-	static matrix<double>& parallel_move_by_vector(point_double vector, matrix<double>& input_matrix)
-	{
-
-		matrix<double> move_matrix(std::vector<std::vector<double>>{
-			{ 1.0, 0.0, vector.x},
-			{ 0.0, 1.0, vector.y},
-			{ 0.0, 0.0, 1.0}
-		});
-
-		return move_matrix * input_matrix;
-
-	}
-
-	/*static matrix<double> rotation(double rad, matrix<double> input_matrix)
-	{
-
-		matrix<double> rotation_matrix(std::vector<std::vector<double>>{
-			{cos(rad), -sin(rad), 0},
-			{sin(rad),  cos(rad), 0},
-			{       0,         0, 1}
-		});
-
-		return rotation_matrix * input_matrix;
-
-	}
-
-	static matrix<double> rotation(double cos, double sin, matrix<double>& input_matrix)
-	{
-
-		matrix<double> rotation_matrix(std::vector<std::vector<double>>{
-			{cos, -sin, 0},
-			{sin,  cos, 0},
-			{0,      0, 1}
-		});
-
-		return rotation_matrix * input_matrix;
-
-	}*/
-
-	static matrix<double>& rotation(POINT rotation_type, matrix<double>& input_matrix)
-	{
-
-		matrix<double> rotation_matrix(std::vector<std::vector<double>>{
-			{static_cast<double>(rotation_type.x), 0, 0},
-			{ 0, static_cast<double>(rotation_type.y), 0 },
-			{ 0, 0, 1 }
-		});
-
-		return rotation_matrix * input_matrix;
-
-	}
-
-	static matrix<double>& rotation(double radian, matrix<double>& input_matrix)
-	{
-
-		matrix<double> rotation_matrix(std::vector<std::vector<double>>{
-			{cos(radian), -sin(radian), 0},
-			{ sin(radian), cos(radian), 0},
-			{ 0, 0, 1}
-		});
-
-		return rotation_matrix * input_matrix;
-
-	}
-
-	static  matrix<double> rotation(double cos, double sin, matrix<double>& input_matrix)
-	{
-		if (cos == 0.0 && sin == 0.0)
-			return input_matrix;
-		matrix<double> rotation_matrix(std::vector<std::vector<double>>{
-			{cos, -sin, 0},
-			{sin,  cos, 0},
-			{0,      0, 1}
-		});
-
-		return rotation_matrix * input_matrix;
-
-	}
-
-	static matrix<double> scaling(point_double k, matrix<double> input_matrix)
-	{
-
-		matrix<double> scale_matrix (std::vector<std::vector<double>>{
-			{k.x,  0, 0},
-			{ 0, k.y, 0},
-			{ 0,  0, 1}
-		});
-
-		return scale_matrix * input_matrix;
-	}
-	//
-	//Доп задания
-	//1. Поворот вокруг центра пакмана
-	//   создать функцию rotation (которая принимает угол иск и игрек), а в этой функции перемножаешь
-	//   три матрицы: переноса, поворота, обратного переноса
-	//2. Масштабирование в доль осей самого пакмана (чтобы при уменьшении оставался в той-же точке)
-	//   Создать скейлинг, принимающий kx ky, а также x0, y0 - координаты точки, которая ост. неизм.
-	//   при масштабировании
-	//   c и s  
-	//
 
 	static matrix<double> custom_rotation(
-		double radian,
-		matrix<double> previous_point,
-		point_double centre_point,
+		point_double_3d rotation,
+		const point_double_3d move_point,
 		matrix<double>& input_matrix
 	)
 	{
-		double k = 1 / previous_point[0][2];
-		const point_double move_coordinates = 
-		{ previous_point[0][0] * k + centre_point.x, previous_point[0][1] * k + centre_point.y};
 
-		input_matrix = parallel_move_by_vector(move_coordinates * -1, input_matrix);
-		//input_matrix = parallel_move_by_vector(centre_point * -1, input_matrix);
-		input_matrix = rotation(radian, input_matrix);
-		input_matrix = parallel_move_by_vector(move_coordinates, input_matrix);
-		//input_matrix = parallel_move_by_vector(centre_point, input_matrix);
+		move(input_matrix, move_point);
+
+		if (rotation[0] != 0.0)
+		{
+			rotate(input_matrix, rotation_type_3d::abscissa, rotation[0]);
+		}
+		if (rotation[1] != 0.0)
+		{
+			rotate(input_matrix, rotation_type_3d::ordinate, rotation[1]);
+		}
+			rotate(input_matrix, rotation_type_3d::applicate, rotation[2]);
 		
+		move(input_matrix, move_point);
 
 		return input_matrix;
 
 	}
 
-	static matrix<double> custom_scaling(
+	static matrix<double>& custom_scaling(
 		point_double scale,
 		double rotation_radian,
 		matrix<double> previous_point,
@@ -158,17 +64,204 @@ public:
 		matrix<double>& input_matrix
 	)
 	{
-		double k = 1 / previous_point[0][2];
-		const point_double move_coordinates =
-		{ previous_point[0][0] * k + centre_point.x, previous_point[0][1] * k + centre_point.y };
+		
+	}
 
-		input_matrix = parallel_move_by_vector(move_coordinates * -1, input_matrix);
-		input_matrix = rotation(-rotation_radian, input_matrix);
-		input_matrix = scaling(scale, input_matrix);
-		input_matrix = rotation(rotation_radian, input_matrix);
-		input_matrix = parallel_move_by_vector(move_coordinates, input_matrix);
+	//Аффинные преобразования для трехмерных моделей:
 
-		return input_matrix;
+	//Переписать преобразования (для транспонированного вида)
+	//Перенос на вектор а(x,y,z)
+	static matrix<double> move(matrix<double>& input_matrix, const point_double_3d& vector)
+	{
+		const auto move_matrix = new matrix<double>(std::vector<std::vector<double>>
+			({
+				{1, 0, 0, vector.x()},
+				{0, 1, 0, vector.y()},
+				{0, 0, 1, vector.z()},
+				{0, 0, 0, 1}
+				})
+			);
+
+		return
+			*move_matrix * input_matrix;
+
+	}
+	//Поворот вокруг осей (абсцисс, ординат, аппликат) на угол фи
+	static matrix<double> rotate(
+		matrix<double>& input_matrix,
+		const rotation_type_3d type,
+		const double phi
+	)
+	{
+
+		matrix<double> *rotation_matrix;
+
+		switch (type)
+		{
+			case rotation_type_3d::abscissa:
+				rotation_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{1,        0,         0, 0},
+						{0, cos(phi), -sin(phi), 0},
+						{0, sin(phi),  cos(phi), 0},
+						{0,        0,         0, 1}
+						})
+				);
+				break;
+
+			case rotation_type_3d::applicate:
+				rotation_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{ cos(phi), -sin(phi), 0, 0},
+						{ sin(phi),  cos(phi), 0, 0},
+						{        0,         0, 0, 0},
+						{        0,         0, 0, 1}
+						})
+				);
+				break;
+
+			case rotation_type_3d::ordinate:
+				rotation_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{ cos(phi), 0, sin(phi), 0},
+						{        0, 1,        0, 0},
+						{-sin(phi), 0, cos(phi), 0},
+						{        0, 0,        0, 1}
+						})
+				);
+				break;
+
+			default:
+				rotation_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{1, 0, 0, 0},
+						{0, 1, 0, 0},
+						{0, 0, 1, 0},
+						{0, 0, 0, 1}
+						})
+				);
+				break;
+		}
+
+		return
+			*rotation_matrix * input_matrix;
+
+	}
+	//Масштабирование вдоль координатных осей
+	static matrix<double> scale(matrix<double>& input_matrix, const point_double_3d& scale_params)
+	{
+		const auto rotation_matrix = new matrix<double>(std::vector<std::vector<double>>
+			({
+				{scale_params.x(),                0,                0, 0},
+				{               0, scale_params.y(),                0, 0},
+				{               0,                0, scale_params.z(), 0},
+				{               0,                0,                0, 1}
+				})
+			);
+
+		return
+			*rotation_matrix * input_matrix;
+
+	}
+	//Отражение относительно осей и плоскостей
+	static matrix<double> mirror(matrix<double>& input_matrix, const mirror_type_3d& type)
+	{
+		matrix<double>* mirror_matrix;
+
+		switch(type)
+		{
+			case mirror_type_3d::yz:
+				mirror_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{-1, 0, 0, 0},
+						{ 0, 1, 0, 0},
+						{ 0, 0, 1, 0},
+						{ 0, 0, 0, 1}
+						})
+					);
+				break;
+
+			case mirror_type_3d::zx:
+				mirror_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{1,  0, 0, 0},
+						{0, -1, 0, 0},
+						{0,  0, 1, 0},
+						{0,  0, 0, 1}
+						})
+					);
+				break;
+
+			case mirror_type_3d::xy:
+				mirror_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{1, 0,  0, 0},
+						{0, 1,  0, 0},
+						{0, 0, -1, 0},
+						{0, 0,  0, 1}
+						})
+					);
+				break;
+
+			case mirror_type_3d::abscissa:
+				mirror_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{1,  0,  0, 0},
+						{0, -1,  0, 0},
+						{0,  0, -1, 0},
+						{0,  0,  0, 1}
+						})
+					);
+				break;
+
+			case mirror_type_3d::ordinate:
+				mirror_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{-1, 0, 0, 0},
+						{ 0, 1, 0, 0},
+						{ 0, 0, -1, 0},
+						{ 0, 0,  0, 1}
+						})
+					);
+				break;
+				
+			case mirror_type_3d::applicate:
+				mirror_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{-1,  0, 0, 0},
+						{ 0, -1, 0, 0},
+						{ 0,  0, 1, 0},
+						{ 0,  0, 0, 1}
+						})
+					);
+				break;
+
+			case mirror_type_3d::zero:
+				mirror_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{-1,  0,  0, 0},
+						{ 0, -1,  0, 0},
+						{ 0,  0, -1, 0},
+						{ 0,  0,  0, 1}
+						})
+					);
+				break;
+
+			default:
+				mirror_matrix = new matrix<double>(std::vector<std::vector<double>>
+					({
+						{1, 0, 0, 0},
+						{0, 1, 0, 0},
+						{0, 0, 1, 0},
+						{0, 0, 0, 1}
+						})
+					);
+					break;
+		}
+
+		return
+			*mirror_matrix * input_matrix;
+
 	}
 };
 #endif

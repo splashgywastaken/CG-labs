@@ -141,28 +141,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="affine_transform.h" />
-    <ClInclude Include="camera_2d.h" />
+    <ClInclude Include="camera_3d.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="mirror_type_3d.h" />
     <ClInclude Include="convert_fucntions.h" />
+    <ClInclude Include="convert_functions_3d.h" />
     <ClInclude Include="direction.h" />
     <ClInclude Include="draw_lines.h" />
     <ClInclude Include="axis_rotation_type.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="graph_2d.h" />
     <ClInclude Include="graph_types.h" />
     <ClInclude Include="Lab2.h" />
-    <ClInclude Include="Matrix.h" />
     <ClInclude Include="model.h" />
-    <ClInclude Include="model_2d.h" />
+    <ClInclude Include="model3d.h" />
+    <ClInclude Include="model3d_impl.h" />
     <ClInclude Include="PointDouble.h" />
+    <ClInclude Include="point_double_3d.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="rotation_type_3d.h" />
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="vector_3d.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="camera_2d.cpp" />
-    <ClCompile Include="graph_2d.cpp" />
+    <ClCompile Include="camera_3d.cpp" />
     <ClCompile Include="Lab2.cpp" />
-    <ClCompile Include="model_2d.cpp" />
+    <ClCompile Include="model3d_impl.cpp" />
     <ClCompile Include="scene_object.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,7 +178,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="edges_file.txt" />
+    <Text Include="faces_file.txt" />
     <Text Include="objects.txt" />
     <Text Include="temporary_storage.txt" />
     <Text Include="vertices_file.txt" />

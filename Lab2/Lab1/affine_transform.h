@@ -151,14 +151,14 @@ public:
 	}
 
 	static matrix<double> custom_scaling(
-		point_double scale,
-		double rotation_radian,
+		const point_double scale,
+		const double rotation_radian,
 		matrix<double> previous_point,
-		point_double centre_point,
+		const point_double centre_point,
 		matrix<double>& input_matrix
 	)
 	{
-		double k = 1 / previous_point[0][2];
+		const double k = 1 / previous_point[0][2];
 		const point_double move_coordinates =
 		{ previous_point[0][0] * k + centre_point.x, previous_point[0][1] * k + centre_point.y };
 

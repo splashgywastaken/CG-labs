@@ -8,27 +8,43 @@ struct point_double
 		   y;
 
 	point_double() { x = 0, y = 0; }
-
-	explicit point_double(const POINT& point)
+	point_double(const double x, const double y) : x(x), y(y)
 	{
-		x = static_cast<double>(point.x);
-		y = static_cast<double>(point.y);
+	}
+	~point_double() = default;
+
+	point_double(const point_double& other) = default;
+
+	point_double(point_double&& other) noexcept
+		: x(other.x),
+		  y(other.y)
+	{
 	}
 
-	point_double(const int x, const int y)
+	point_double& operator=(const point_double& other)
 	{
-
-		this->x = x;
-		this->y = y;
-
+		if (this == &other)
+			return *this;
+		x = other.x;
+		y = other.y;
+		return *this;
 	}
 
-	point_double(const double x, const double y)
+	point_double& operator=(point_double&& other) noexcept
 	{
+		if (this == &other)
+			return *this;
+		x = other.x;
+		y = other.y;
+		return *this;
+	}
 
-		this->x = x;
-		this->y = y;
+	explicit point_double(const POINT& point) : x(static_cast<double>(point.x)), y(static_cast<double>(point.y))
+	{
+	}
 
+	point_double(const int x, const int y) : x(x), y(y)
+	{
 	}
 
 	::point_double operator*(double& value) const

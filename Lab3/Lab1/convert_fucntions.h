@@ -4,21 +4,22 @@
 #include "PointDouble.h"
 #include "framework.h"
 
-static class convert_functions
+class convert_functions
 {
 
 public:
 
-	static POINT world_to_screen(
+	static point_double world_to_screen(
 		const point_double point_world,
 		const point_double point_world0_in_screen,
-		const point_double pixel)
+		const point_double pixel
+	)
 	{
 
-		POINT result{};
+		point_double result{};
 
-		result.x = static_cast<LONG>(point_world0_in_screen.x + pixel.x * point_world.x);
-		result.y = static_cast<LONG>(point_world0_in_screen.y - pixel.y * point_world.y);
+		result.x = point_world0_in_screen.x + point_world.x * pixel.x;
+		result.y = point_world0_in_screen.y - point_world.y * pixel.y;
 
 		return result;
 
@@ -39,7 +40,7 @@ public:
 		return result;
 
 	}
-	
+
 };
 
 #endif

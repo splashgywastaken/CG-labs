@@ -57,22 +57,13 @@
     <ClInclude Include="scene_object.h">
       <Filter>Файлы заголовков\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="camera_2d.h">
-      <Filter>Файлы заголовков\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="Lab2.h">
       <Filter>Файлы заголовков\main</Filter>
     </ClInclude>
     <ClInclude Include="graph_types.h">
       <Filter>Исходные файлы\Service\Enums</Filter>
     </ClInclude>
-    <ClInclude Include="graph_2d.h">
-      <Filter>Файлы заголовков\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="PointDouble.h">
-      <Filter>Исходные файлы\Service\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix.h">
       <Filter>Исходные файлы\Service\Structs</Filter>
     </ClInclude>
     <ClInclude Include="convert_fucntions.h">
@@ -84,9 +75,6 @@
     <ClInclude Include="model.h">
       <Filter>Файлы заголовков\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="model_2d.h">
-      <Filter>Файлы заголовков\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="draw_lines.h">
       <Filter>Исходные файлы\Service\Helper classes</Filter>
     </ClInclude>
@@ -96,21 +84,48 @@
     <ClInclude Include="axis_rotation_type.h">
       <Filter>Исходные файлы\Service\Enums</Filter>
     </ClInclude>
+    <ClInclude Include="point_double_3d.h">
+      <Filter>Исходные файлы\Service\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="model3d.h">
+      <Filter>Файлы заголовков\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_3d.h">
+      <Filter>Файлы заголовков\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="convert_functions_3d.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
+    <ClInclude Include="rotation_type_3d.h">
+      <Filter>Исходные файлы\Service\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="model3d_impl.h">
+      <Filter>Файлы заголовков\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="mirror_type_3d.h">
+      <Filter>Исходные файлы\Service\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="vector_3d.h">
+      <Filter>Исходные файлы\Service\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scene_object.cpp">
       <Filter>Исходные файлы\Interface</Filter>
     </ClCompile>
-    <ClCompile Include="camera_2d.cpp">
-      <Filter>Исходные файлы\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="Lab2.cpp">
       <Filter>Исходные файлы\main</Filter>
     </ClCompile>
-    <ClCompile Include="graph_2d.cpp">
+    <ClCompile Include="camera_3d.cpp">
       <Filter>Исходные файлы\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="model_2d.cpp">
+    <ClCompile Include="model3d_impl.cpp">
       <Filter>Исходные файлы\Entity</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,7 +149,7 @@
     <Text Include="vertices_file.txt">
       <Filter>Исходные файлы\Service</Filter>
     </Text>
-    <Text Include="edges_file.txt">
+    <Text Include="faces_file.txt">
       <Filter>Исходные файлы\Service</Filter>
     </Text>
     <Text Include="temporary_storage.txt">

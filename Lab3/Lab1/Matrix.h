@@ -10,31 +10,43 @@ class matrix
 	std::vector<std::vector<T>> matrix_;
 	
 	//util functions
-	static T& prod_of_sum (const std::vector<T>& a, const std::vector<T>& b)
+	static T prod_of_sum (const std::vector<T>& a, const std::vector<T>& b)
 	{
-		auto result = new T(0);
+		T result = 0;
 
 		for (size_t i = 0; i < a.size(); i++)
-			*result += a[i] * b[i];
+			result += a[i] * b[i];
 
-		return *result;
+		return result;
 	}
 
-	static std::vector<T>& get_column(matrix& obj, const size_t& column_number)
+	static std::vector<T> get_column(matrix& obj, const size_t& column_number)
 	{
-		const auto column = new std::vector<T>;
-		column->resize(obj.n());
+		std::vector<T> column;
+		column.resize(obj.n());
 
 		for (size_t i = 0; i < obj.n(); i++)
-			(*column)[i] = obj[i][column_number];
+			column[i] = obj[i][column_number];
 
-		return *column;
+		return column;
 	}
 
 public:
-	explicit matrix(const std::vector<std::vector<T>> matrix)
+
+	matrix<T>() = default;
+
+	~matrix()
 	{
-		matrix_ = std::move(matrix);
+		const auto _n = new size_t(n());
+		for (size_t i = 0; i < *_n; i++)
+		{
+			matrix_.at(i).clear();
+		}
+		matrix_.clear();
+	}
+
+	explicit matrix(const std::vector<std::vector<T>> matrix) : matrix_(std::move(matrix))
+	{
 	}
 
 	explicit matrix(const std::vector<T> matrix)
@@ -73,17 +85,8 @@ public:
 
 	}
 
-	matrix(const size_t& n, const size_t& m)
+	matrix(const size_t& n, const size_t& m) : matrix_(std::vector<std::vector<T>>(n, std::vector<T>(m)))
 	{
-		matrix_.resize(n);
-
-		for (size_t i = 0; i < n; i++)
-			matrix_[i].resize(m);
-
-		for (auto& row : matrix_)
-			for (auto& element : row)
-				element = 0;
-
 	}
 
 	matrix(const matrix& other)
@@ -95,9 +98,7 @@ public:
 		: matrix_(std::move(other.matrix_))
 	{
 	}
-
-	~matrix() = default;
-
+	
 	matrix& operator=(const matrix& other)
 	{
 		if (this == &other)
@@ -167,29 +168,34 @@ public:
 			matrix_.size();
 	}
 
-	matrix& transpose()
+	matrix transpose()
 	{
 		auto transposed_matrix = new matrix<T>(m(), n());
+		const auto matrix_n = new size_t(n());
+		const auto matrix_m = new size_t(m());
 
-		for (size_t i = 0; i < n(); i++)
-			for (size_t j = 0; j < m(); j++)
+		for (size_t i = 0; i < *matrix_n; i++)
+			for (size_t j = 0; j < *matrix_m; j++)
 				(*transposed_matrix)[j][i] = (*this)[i][j];
+
+		delete matrix_n;
+		delete matrix_m;
 
 		return *transposed_matrix;
 	}
 
-	friend double det(matrix matr)
+	friend double det(matrix input_matrix)
 	{
-		size_t n = matr.n();
-		const size_t m = matr.m();
+		size_t n = input_matrix.n();
+		const size_t m = input_matrix.m();
 
 		if (m == 1)
 		{
-			return matr[0][0];
+			return input_matrix[0][0];
 		}
 		if (m == 2)
 		{
-			return matr[0][0] * matr[1][1] - matr[0][1] * matr[1][0];
+			return input_matrix[0][0] * input_matrix[1][1] - input_matrix[0][1] * input_matrix[1][0];
 		}
 
 		double determinant = 0;
@@ -201,8 +207,8 @@ public:
 
 		for (size_t j = 0; j < n - 1; j++)
 		{
-			minor = get_matrix_without_row_column(matr, 0, j);
-			determinant = determinant + matr[0][j] * static_cast<T>(degree) * det(matrix(minor));
+			minor = get_matrix_without_row_column(input_matrix, 0, j);
+			determinant = determinant + input_matrix[0][j] * static_cast<T>(degree) * det(matrix(minor));
 			degree = -degree;
 		}			
 
@@ -296,32 +302,37 @@ public:
 		return *this;
 	}
 
-	matrix& operator*(matrix& obj)
+	matrix<T> operator*(matrix<T>& obj)
 	{
-		auto temp = obj.transpose();
 
-		//obj - 3xN
-		//this affine matrix - 3x3
-		auto c = new matrix<T>(this->n(), temp.m());
-		try
+		if (m() == obj.n())
 		{
-			if (this->m() != temp.n())
-				throw std::exception("Number of columns of first matrix is not equal to number of rows of second matrix\nOutputing null matrix");
+			const auto new_n = new size_t(n());
+			const auto new_m = new size_t(obj.m());
+			const auto matrix_m = new size_t(m());
+			matrix<T> result(*new_n, *new_m);
 
-			/*for (size_t i = 0; i < n(); i++)
-				for (size_t j = 0; j < obj.n(); j++)
-					(*c)[i][j] = prod_of_sum(get_column(obj, i), matrix_[j]);*/
+			for (size_t i = 0; i < *new_n; i++)
+			{
+				for (size_t j = 0; j < *new_m; j++)
+				{
 
-			for (size_t i = 0; i < c->n(); i++)
-				for (size_t j = 0; j < c->m(); j++)
-					(*c)[i][j] = prod_of_sum((*this)/*.transpose()*/[i], get_column(temp, j));
+					for (size_t k = 0; k < *matrix_m; k++)
+						result[i][j] += this->operator[](i)[k] * obj[k][j];
 
-		} catch(std::exception& e)
-		{
-				//OutputDebugStringA(e.what());
-		} 
+				}
+			}
 
-		return c->transpose();
+			delete new_n;
+			delete new_m;
+			delete matrix_m;
+
+			return result;
+
+		}
+
+		return *this;
+
 	}
 
 	std::vector<T>& operator[](const size_t& i)

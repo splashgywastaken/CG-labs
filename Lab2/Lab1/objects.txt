@@ -1,4 +1,4 @@
 vertices_file.txt
 edges_file.txt
 cube
-4
+3

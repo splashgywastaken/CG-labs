@@ -1,33 +1,4 @@
-﻿// Lab1.cpp : Определяет точку входа для приложения.
-//
-
-/*
-Вариант 12. Полярная система координат. Параметрический способ задания функции.
-Второй способ связи мировых и экранных координатных систем (при помощи параметров X0, Y0, px, py).
-Масштабирование с сохранением положения верхней и нижней границ окна.
-
-Задачи из этой лабы:
-
-Построение графиков функций:
-• (A) построение графика функции, заданной явно в мировых координатах (система координат – декартова прямоугольная);
-• (B) перетаскивание графика функции;
-• (B) масштабирование графика функции (с сохранением позиции точки, на которую наведён курсор мыши);
-• (C) согласование масштабов по координатным осям;
-• (C) построение графика функции, заданной иным способом (параметрически).
-
-*/
-//
-//Доп задания
-//1. Поворот вокруг центра пакмана
-//   создать функцию rotation (которая принимает угол иск и игрек), а в этой функции перемножаешь
-//   три матрицы: переноса, поворота, обратного переноса
-//2. Масштабирование в доль осей самого пакмана (чтобы при уменьшении оставался в той-же точке)
-//   Создать скейлинг, принимающий kx ky, а также x0, y0 - координаты точки, которая ост. неизм.
-//   при масштабировании
-//   c и s  
-//
-
-#include "framework.h"
+﻿#include "framework.h"
 #include <Windows.h>
 #include <windowsx.h>
 #include "Lab2.h"
@@ -36,11 +7,9 @@
 #include <vector>
 
 #include "axis_rotation_type.h"
-#include "camera_2d.h"
+#include "camera_3d.h"
 #include "direction.h"
-#include "graph_2d.h"
-#include "model.h"
-#include "model_2d.h"
+#include "model3d_impl.h"
 #include "PointDouble.h"
 
 #define MAX_LOADSTRING 100
@@ -50,15 +19,13 @@ class camera_2d;
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
-const double RESIZE_K = 0.1;
 
-//Объекты сцены
-//std::vector<graph_2d*> graphs_vector;
-//Объект фокуса
-//graph_2d* focused;
-//Камера
-camera_2d* camera2d;
-std::vector<model*> scene_models;
+const double RESIZE_K = 0.1;
+camera_3d* camera;
+std::vector<model3d*> objects;
+int frame = 0;
+bool is_there_input = true;
+bool mouse_button_pressed = false;
 
 // Отправить объявления функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -69,13 +36,14 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 int draw_scene_objects(HDC dc);
 int load_camera(HDC dc);
 //int add_new_graph(const POINT& pos0, const std::string& graph_type, const PointDouble& params);
-void load_scene_objects(std::string filename);
-void rotate_scene_model(HDC dc, model& obj, axis_rotation_type type);
-void rotate_scene_model(HDC dc, model& obj, double radians);
-void rotate_scene_model(HDC dc, model& obj, double cos, double sin);
-void resize_scene_model(HDC dc, model& obj, double k);
-void resize_scene_model(HDC dc, model& obj, point_double k);
-void move_scene_model(HDC dc, model& obj, double distance, direction _direction);
+void animate(HDC dc);
+void load_scene_objects(const std::string& filename);
+void rotate_scene_model(HDC dc, model3d* obj, axis_rotation_type type);
+void mirror_scene_model(HDC dc, model3d* obj, mirror_type_3d);
+void rotate_scene_model(HDC dc, model3d* obj, rotation_type_3d rotation_type, double radians);
+void resize_scene_model(HDC dc, model3d* obj, double k);
+void resize_scene_model(HDC dc, model3d* obj, point_double_3d k);
+void move_scene_model(HDC dc, model3d* obj, double distance, direction direction);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -169,11 +137,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
 
-   // Загружаем объект камеры
    load_camera( GetDC(hWnd) );
    load_scene_objects("objects.txt");
-   //Загружаем график для отрисовки (в следующей версии предположительно данный функционал будет по нажатию клавиши)
-   //add_new_graph(POINT{ 0,0 }, "rose", PointDouble{1,1});
 
    UpdateWindow(hWnd);
 
@@ -190,7 +155,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - отправить сообщение о выходе и вернуться
 //
 //
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(
+    HWND hWnd,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam
+)
 {
     switch (message)
     {
@@ -217,136 +187,150 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
 
-            //Очистка экрана
-            camera_2d::clear_window(hdc);
-            //Функция для прорисовки объектов на сцене
-            draw_scene_objects(hdc);
+            /*if (is_there_input) {*/
+                //Очистка экрана
+                camera_3d::clear_window(hdc);
+                //Функция для прорисовки объектов на сцене
+                //animate(hdc);
+                draw_scene_objects(hdc);
+                //InvalidateRect(hWnd, nullptr, false);
 
-            EndPaint(hWnd, &ps);
+                EndPaint(hWnd, &ps);
+                is_there_input = false;
+            /*}*/
         }
         break;
 
     case WM_MOUSEWHEEL:
-	    {
-        
-	        POINT mouse_pos{
-	               GET_X_LPARAM(lParam),
-	               GET_Y_LPARAM(lParam)
-	        };
-            ScreenToClient(hWnd, &mouse_pos);
-            
-	        if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
-	        {
-	            camera2d->resize(1 + RESIZE_K, mouse_pos);
-	        }
-	        else
-	        {
-	            camera2d->resize(1 - RESIZE_K, mouse_pos);
-	        }
-			InvalidateRect(hWnd, nullptr, false);
-		        
-	    }
-    	break;
+    {
+	    POINT mouse_pos{
+                   GET_X_LPARAM(lParam),
+                   GET_Y_LPARAM(lParam)
+            };
+
+        ScreenToClient(hWnd, &mouse_pos);
+
+        if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
+        {
+			camera->resize(1 + RESIZE_K, mouse_pos);
+        }
+        else
+        {
+			camera->resize(1 - RESIZE_K, mouse_pos);
+        }
+        is_there_input = true;
+        InvalidateRect(hWnd, nullptr, false);
+    }
+    break;
 
     case WM_LBUTTONDOWN:
-	    {
+    {
 
-	        camera2d->start_dragging(
-	            point_double{
-	                GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)
-	            }
-	        );
-
-	    }
-        break;
+        camera->start_dragging(
+            point_double{
+                GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)
+            }
+        );
+    }
+    break;
 
     case WM_MOUSEMOVE:
-	    {
-
-			if (camera2d->is_dragging())
-			{
-
-                camera2d->drag(
+    {
+            if (camera->is_dragging())
+            {
+                camera->drag(
                     point_double{
-                    GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)
+                        GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)
                     }
                 );
-
-			}
-            InvalidateRect(hWnd, nullptr, false);
-
-	    }
-        break;
+                InvalidateRect(hWnd, nullptr, false);
+            }
+            
+    }
+    break;
 
     case WM_LBUTTONUP:
-	    {
+    {
+        mouse_button_pressed = false;
+        camera->stop_dragging();
+        is_there_input = true;
 
-			camera2d->stop_dragging();
-
-	    }
-        break;
+    }
+    break;
 
     case WM_KEYDOWN:
 	    {
 
 			auto dc = GetDC(hWnd);
+            constexpr double distance = 5.0;
+            const double radian = 1.0 - sqrt(3) / 2;
 
 	        switch (wParam)
 		        {
+
                 //Поворот относительно начала координат на угол фи
 					//левый поворот
 			        case VK_LEFT:
 			        {
-				        for (auto& scene_model: scene_models)
+				        for (const auto& object : objects)
 				        {
-                            rotate_scene_model(dc, *scene_model, -6);
+                            rotate_scene_model(dc, object, rotation_type_3d::ordinate, radian);
 				        }	                    
 			        }
 			        break;
 					//правый поворот
 			        case VK_RIGHT:
 	                {
-                        for (auto& scene_model : scene_models)
+                        for (const auto& object : objects)
                         {
-                            rotate_scene_model(dc, *scene_model, 6);
+                            rotate_scene_model(dc, object, rotation_type_3d::ordinate, - radian);
                         }
 	                }
+                    break;
+                    //левый поворот
+                    case VK_UP:
+                    {
+                        for (const auto& object : objects)
+                        {
+                            rotate_scene_model(dc, object, rotation_type_3d::abscissa, radian);
+                        }
+                    }
+                    break;
+                    //правый поворот
+                    case VK_DOWN:
+                    {
+                        for (const auto& object : objects)
+                        {
+                            rotate_scene_model(dc, object, rotation_type_3d::abscissa, -radian);
+                        }
+                    }
 	        		break;
 					//Перенос на вектор а
 	                //клавиша A, а = (-1,0)
 	                case 0x41:
 	                {
-                        for (auto& scene_model : scene_models)
+                        for (const auto& object : objects)
                         {
                             move_scene_model(
                                 dc,
-                                *scene_model,
-                                1.0,
+                                object,
+                                distance,
                                 direction::LEFT
                             );
                         }
                         
 	                }
 	        		break;
-
-			        case 0x43:
-		            {
-
-
-
-		            }
-	        		break;
-
 					
 	                //D, а = (1, 0)
 	                case 0x44:
                     {
-                        for (auto& scene_model : scene_models)
+                        for (const auto& object : objects)
                         {
                             move_scene_model(
                                 dc,
-                                *scene_model,
-                                1.0,
+                                object,
+                                distance,
                                 direction::RIGHT
                             );
                         }
@@ -355,13 +339,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	                //W, а = (0, 1)
 	                case 0x57:
 	                {
-                        for (auto& scene_model : scene_models)
+                        for (const auto& object : objects)
                         {
 							move_scene_model(
 								dc,
-								*scene_model,
-                                1.0,
-                                direction::UP
+                                object,
+                                distance,
+                                direction::DOWN
                                 );
                         }
 	                }
@@ -369,68 +353,55 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	                //S, а = (0, -1)
 	                case 0x53:
 		            {
-						for (auto& scene_model : scene_models)
+						for (const auto& object : objects)
                         {
 							move_scene_model(
 								dc,
-                                *scene_model,
-                                1.0,
-                                direction::DOWN
+                                object,
+                                distance,
+                                direction::UP
                             );
                         }
 		            }
 	                break;
-                //Отражение относительно координатных осей
+					//Отражение относительно координатных осей
 					//J
                     case 0x4A:
                     {
-                    	for (auto& scene_model : scene_models)
+                    	for (const auto& object : objects)
 		                {
-                            rotate_scene_model(
-                                dc,
-                                *scene_model,
-                                axis_rotation_type::ABSCISSA
-                            );
+                            mirror_scene_model(dc, object, mirror_type_3d::abscissa);
 		                }                        
                     }
 	        		break;
 					//K
                     case 0x4B:
                     {
-                        for (auto& scene_model : scene_models)
+                        for (const auto& object : objects)
                         {
-                            rotate_scene_model(
-                                dc,
-                                *scene_model,
-                                axis_rotation_type::ORDINATE
-                            );
+                            mirror_scene_model(dc, object, mirror_type_3d::ordinate);
                         }
                     }
 	        		break;
 					//L
                     case 0x4C:
 	                {
-                        for (auto& scene_model : scene_models)
+                        for (const auto& object : objects)
                         {
-                            rotate_scene_model(
-                                dc,
-                                *scene_model,
-                                axis_rotation_type::ZERO
-                            );
+                            mirror_scene_model(dc, object, mirror_type_3d::applicate);
                         }
 	                }
                     break;
-                //Масштабирование на k
+					//Масштабирование на k
 					//-
                     case VK_OEM_MINUS:
 	                {
-                        for (auto& scene_model : scene_models)
+                        for (const auto& object: objects)
                         {
                             resize_scene_model(
                                 dc,
-                                *scene_model,
-                                /*0.9*/
-                                point_double{1/1.5, 1/0.9}
+                                object,
+                                point_double_3d{0.9,0.9,0.9}
                             );
                         }
 	                }
@@ -438,13 +409,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					//+
                     case VK_OEM_PLUS:
                     {
-                        for (auto& scene_model : scene_models)
+                        for (const auto& object : objects)
                         {
                             resize_scene_model(
                                 dc,
-                                *scene_model,
-                                /*1.2*/
-                                point_double{1.5, 0.9}
+                                object,
+                                point_double_3d{ 1.1,1.1,1.1 }
                             );
                         }
                     }
@@ -456,22 +426,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_SIZE:
 	    {
-	        if (camera2d != nullptr) {
+	        if (camera != nullptr) 
+            {
 	            //Вызывается при изменении размеров окна
 	            RECT r;
-	            auto dc = GetDC(hWnd);
+	            const auto dc = GetDC(hWnd);
 
 	            GetClientRect(WindowFromDC(dc), &r);
 	            //Функция для изменения параметров класса камеры, хранящих информацию об окне пользователя
 
-	            camera2d->on_window_size_change(
+	            camera->on_window_size_change(
 	                r.right,
 	                r.bottom
 	            );
-                ReleaseDC( hWnd, dc);
-                InvalidateRect(hWnd, nullptr, false);
+	            ReleaseDC(hWnd, dc);
+	            InvalidateRect(hWnd, nullptr, false);
 	        }
-
 	    }
         break;
     case WM_DESTROY:
@@ -504,216 +474,254 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-int load_camera(HDC dc)
+int load_camera(const HDC dc)
 {
-    RECT r;
-    GetClientRect(WindowFromDC(dc), &r);
+    RECT screen_rectangle;
+    GetClientRect(WindowFromDC(dc), &screen_rectangle);
     
-    camera2d = new camera_2d(
-        r.right,
-        r.bottom,
-        -4,
-        4,
-        2.5,
-        -2.5,
-        POINT{0,0}
+    camera = new camera_3d(
+        point_double_3d(0,0,0),
+        vector_3d(0,0, 1),
+        vector_3d(0,1,0),
+        24.0,
+         point_double(0.0, 0.0),
+        static_cast<double>(screen_rectangle.right),
+        static_cast<double>(screen_rectangle.bottom),
+        point_double(150.0, 150.0)
     );
-
+    
     return 1;
 
 }
 
-void load_scene_objects(std::string filename)
+void animate(HDC dc)
 {
 
+    if (frame % 2 == 0)
+    {
+	   /* for (model3d* object : objects)
+	    {
+            object->resize(dc, point_double_3d{ 1.0-sin(frame), 1.0 - sin(frame), 1.0 - sin(frame)});
+	    }*/
+    } else
+    {
+        for (model3d* object : objects)
+        {
+            object->rotate(dc, rotation_type_3d::applicate, sin(frame/10000));
+        }
+    }
+    frame++;
+}
+
+void load_scene_objects(const std::string& filename)
+{
+    
     //В данный файл записывается имя модели и количество вершин m
     std::ifstream file;
     file.open(filename);
 
     std::string vertices_filename;
-    std::string edges_filename;
+    std::string faces_filename;
 
-    std::ifstream vertices_file;
-    std::ifstream edges_file;
+    std::ifstream verticies_file;
+    std::ifstream faces_file;
     file >> vertices_filename;
-    file >> edges_filename;
+    file >> faces_filename;
 
-    vertices_file.open(vertices_filename);
-    edges_file.open(edges_filename);
+    verticies_file.open(vertices_filename);
+    faces_file.open(faces_filename);
 
-    while(!file.eof())
+    while (!file.eof())
     {
         std::string model_name;
-        std::string buff1;
-        std::string buff2;
+        int number_of_duplicates;
+        std::string verticies_buffer;
+        std::string faces_buffer;
         file >> model_name;
+        file >> number_of_duplicates;
+        double x, y, z;
+        file >> x;
+        file >> y;
+        file >> z;
+        double alpha, beta, gamma;
+        file >> alpha;
+        file >> beta;
+        file >> gamma;
 
-        edges_file.seekg(0, std::ios::beg);
-        vertices_file.seekg(0, std::ios::beg);
+        faces_file.seekg(0, std::ios::beg);
+        verticies_file.seekg(0, std::ios::beg);
 
-        while (!vertices_file.eof() && buff1 != model_name)
+        while (!verticies_file.eof() && verticies_buffer != model_name)
         {
-            vertices_file >> buff1;
+            verticies_file >> verticies_buffer;
         }
 
-        while (!edges_file.eof() && buff2 != model_name)
+        while (!faces_file.eof() && faces_buffer != model_name)
         {
-            edges_file >> buff2;
+            faces_file >> faces_buffer;
         }
 
-        if (!vertices_file.eof() && !edges_file.eof())
+        if (!verticies_file.eof() && !faces_file.eof())
         {
 
+            size_t l;
             size_t m;
 
-            file >> m;
+            faces_file >> l;
+            verticies_file >> m;
 
-            std::vector<std::vector<double>> verticies(m);
+            std::vector<std::vector<double>> verticies(4);
             for (auto& vector : verticies)
-            {
-                vector.resize(3);
-            }
-
-            //добавляем вершины
-            for (size_t i = 0; i < m; i++)
-            {
-                for (size_t j = 0; j < 3; j++)
-                {
-                    vertices_file >> verticies[i][j];
-                }
-            }
-
-            //Добавляем грани
-            std::vector<std::vector<int>> edges(m);
-            for (auto& vector : edges)
             {
                 vector.resize(m);
             }
 
-            for (size_t i = 0; i < m; i++)
+            //добавляем вершины
+            for (size_t i = 0; i < 4; i++)
             {
                 for (size_t j = 0; j < m; j++)
                 {
-                    edges_file >> edges[i][j];
+                    verticies_file >> verticies[i][j];
                 }
             }
 
-            scene_models.push_back(
-                new model_2d(verticies, edges)
-            );
+            //Добавляем грани
+            std::vector<std::vector<int>> faces(l);
+            for (auto& vector : faces)
+            {
+                vector.resize(3);
+            }
 
+            for (size_t i = 0; i < l; i++)
+            {
+                for (size_t j = 0; j < 3; j++)
+                {
+                    faces_file >> faces[i][j];
+                }
+            }
+
+            for (int i = 0; i < number_of_duplicates; i++)
+            {
+                const auto init_position = point_double_3d{x,y,z};
+                const auto init_rotation = point_double_3d{ alpha,beta,gamma };
+
+	            //Вносим новый объект в вектор объектов
+            	objects.push_back(
+					new model3d_impl(
+						verticies,
+						faces,
+						init_position,
+                        init_rotation
+					)
+				);
+                file >> x;
+                file >> y;
+                file >> z;
+            }
+
+            verticies.clear();
+            faces.clear();
+                
         }
 
     }
 
     file.close();
-    vertices_file.close();
-    edges_file.close();
+    verticies_file.close();
+    faces_file.close();
+    is_there_input = true;
+}
+
+void mirror_scene_model(HDC dc, model3d* obj, mirror_type_3d mirror_type)
+{
+    is_there_input = true;
+
+    obj->mapping(dc, mirror_type);
 
 }
 
-//int add_new_graph(const POINT& pos0, const std::string& graph_type, const PointDouble& params)
-//{
-//    
-//    graphs_vector.push_back(
-//        new graph_2d(
-//            pos0.x,
-//            pos0.y  
-//        )
-//    );
-//
-//    graphs_vector.at(graphs_vector.size() - 1)->set_graph_type(
-//        graph_type,
-//        params.x,
-//        params.y
-//    );
-//
-//    return 1;
-//
-//}
-
-void rotate_scene_model(HDC dc, model& obj, axis_rotation_type type)
+void rotate_scene_model(HDC dc, model3d* obj, rotation_type_3d type)
 {
-    if (type == axis_rotation_type::ABSCISSA)
-    {
-        obj.rotate(dc, POINT{1, -1});
-    } else if (type == axis_rotation_type::ORDINATE)
-    {
-        obj.rotate(dc, POINT{ -1, 1 });
-    } else if (type == axis_rotation_type::ZERO)
-    {
-        obj.rotate(dc, POINT{-1, -1});
-    }
+	const double radian = sqrt(3)/2;
+    is_there_input = true;
+
+    obj->rotate(dc, type, radian);
 }
 
-void rotate_scene_model(HDC dc, model& obj, double radians)
+void rotate_scene_model(
+    HDC dc, 
+    model3d* obj, 
+    const rotation_type_3d rotation_type, 
+    const double radians
+)
 {
-
-    obj.rotate(dc, radians);
-
+    is_there_input = true;
+    obj->rotate(dc, rotation_type, radians);
 }
 
-void rotate_scene_model(HDC dc, model& obj, double cos, double sin)
+void move_scene_model(HDC dc, model3d* obj, double distance, const direction _direction)
 {
+    is_there_input = true;
 
-    obj.rotate(dc, cos, sin);
-
-}
-
-void move_scene_model(HDC dc, model& obj, double distance, direction _direction)
-{
-
-    if (_direction == direction::UP)
-    {
-
-        obj.move(dc, {0.0, distance});
-
-    }
     if (_direction == direction::DOWN)
     {
 
-        obj.move(dc, { 0.0, -1 * distance });
+        obj->move(dc, {0.0, distance, 0.0});
+
+    }
+    if (_direction == direction::UP)
+    {
+
+        obj->move(dc, { 0.0, -distance, 0.0 });
 
     }
     if (_direction == direction::LEFT)
     {
 
-        obj.move(dc, { -distance, 0.0 });
+        obj->move(dc, { -distance, 0.0, 0.0 });
 
     }
     if (_direction == direction::RIGHT)
     {
 
-        obj.move(dc, { distance, 0.0 });
+        obj->move(dc, { distance, 0.0, 0.0 });
 
     }
 
 }
 
-void resize_scene_model(HDC dc, model& obj, double k)
+void resize_scene_model(HDC dc, model3d* obj, double k)
 {
+    is_there_input = true;
 
-    obj.resize(dc, point_double{ k, k});
+    obj->resize(dc, point_double_3d{ k, k, k});
 
 }
 
-void resize_scene_model(HDC dc, model& obj, point_double k)
+void resize_scene_model(HDC dc, model3d* obj, point_double_3d k)
 {
+    is_there_input = true;
 
-    obj.resize(dc, k);
+    obj->resize(dc, k);
 
 }
 
 int draw_scene_objects(HDC dc)
 {
+    is_there_input = true;
 
-    if (!scene_models.empty())
+    if (camera == nullptr)
     {
-	    for (const auto& scene_model : scene_models)
+        return -1;
+    }
+    
+    if (!objects.empty())
+    {
+	    for (const auto& object : objects)
 	    {
-            camera2d->draw(dc, scene_model);
+            camera->draw(dc, object);
 	    }
     }
 
-    return -1;//Failure code. Number of objects was zero
+    return -2;//Failure code. Number of objects was zero
 }

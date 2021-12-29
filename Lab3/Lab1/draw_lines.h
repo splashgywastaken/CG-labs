@@ -14,7 +14,7 @@ public:
 		const point_double pixel)
 	{
 
-		const POINT point_screen = convert_functions::world_to_screen(
+		const point_double point_screen = convert_functions::world_to_screen(
 			world_point,
 			point_world0_in_screen,
 			pixel
@@ -31,7 +31,7 @@ public:
 		const point_double pixel)
 	{
 
-		const POINT screen_point = convert_functions::world_to_screen(
+		const point_double screen_point = convert_functions::world_to_screen(
 			world_point,
 			point_world0_in_screen,
 			pixel
@@ -42,20 +42,20 @@ public:
 	}
 
 	static void connect_points(
-		const HDC dc,
-		const point_double first,
-		const point_double second,
-		const point_double point_world0,
-		const point_double pixel
+		const HDC& dc,
+		const point_double& first,
+		const point_double& second,
+		const point_double& point_world0,
+		const point_double& pixel
 	)
 	{
 
-		const POINT screen_first = convert_functions::world_to_screen(
+		const point_double screen_first = convert_functions::world_to_screen(
 			first,
 			point_world0,
 			pixel
 		);
-		const POINT screen_second = convert_functions::world_to_screen(
+		const point_double screen_second = convert_functions::world_to_screen(
 			second,
 			point_world0,
 			pixel
@@ -83,14 +83,26 @@ private:
 
 	}
 
-	static void move_to(const HDC dc, const POINT screen_point)
+	static void connect_points(
+		const HDC& dc,
+		const point_double& first,
+		const point_double& second
+	)
+	{
+
+		MoveToEx(dc, first.x, first.y, nullptr);
+		LineTo(dc, second.x, second.y);
+
+	}
+
+	static void move_to(const HDC dc, const point_double screen_point)
 	{
 
 		MoveToEx(dc, screen_point.x, screen_point.y, nullptr);
 
 	}
 	
-	static void line_to(const HDC dc, const POINT screen_point)
+	static void line_to(const HDC dc, const point_double screen_point)
 	{
 
 		LineTo(dc, screen_point.x, screen_point.y);
