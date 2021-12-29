@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{42c4beac-0dc7-485a-bb6c-dccf6a4963d8}</ProjectGuid>
-    <RootNamespace>Lab3</RootNamespace>
+    <ProjectGuid>{f704d3c0-0c46-4797-bbbf-8115ffb3c1c0}</ProjectGuid>
+    <RootNamespace>Lab32</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Lab3</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -140,19 +139,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="affine_transform.h" />
+    <ClInclude Include="..\..\..\Lab3\Lab1\affine_transform.h" />
+    <ClInclude Include="axis_rotation_type.h" />
     <ClInclude Include="camera_3d.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="Matrix.h" />
-    <ClInclude Include="mirror_type_3d.h" />
     <ClInclude Include="convert_fucntions.h" />
     <ClInclude Include="convert_functions_3d.h" />
     <ClInclude Include="direction.h" />
     <ClInclude Include="draw_lines.h" />
-    <ClInclude Include="axis_rotation_type.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="graph_types.h" />
-    <ClInclude Include="Lab2.h" />
+    <ClInclude Include="Lab3.2.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="mirror_type_3d.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model3d.h" />
     <ClInclude Include="model3d_impl.h" />
@@ -166,20 +165,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera_3d.cpp" />
-    <ClCompile Include="Lab2.cpp" />
+    <ClCompile Include="Lab3.2.cpp" />
     <ClCompile Include="model3d_impl.cpp" />
     <ClCompile Include="scene_object.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Lab1.rc" />
+    <ResourceCompile Include="Lab3.2.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Lab1.ico" />
+    <Image Include="Lab3.2.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="faces_file.txt" />
     <Text Include="objects.txt" />
+    <Text Include="output.txt" />
     <Text Include="temporary_storage.txt" />
     <Text Include="vertices_file.txt" />
   </ItemGroup>

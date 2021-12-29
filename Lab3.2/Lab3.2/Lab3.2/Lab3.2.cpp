@@ -1,7 +1,7 @@
 ﻿#include "framework.h"
 #include <Windows.h>
 #include <windowsx.h>
-#include "Lab2.h"
+#include "Lab3.2.h"
 
 #include <fstream>
 #include <vector>
@@ -12,6 +12,7 @@
 #include "direction.h"
 #include "model3d_impl.h"
 #include "PointDouble.h"
+#include "Resource.h"
 
 #define MAX_LOADSTRING 100
 
@@ -60,7 +61,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // Инициализация глобальных строк
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_LAB1, szWindowClass, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_LAB32, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
     // Выполнить инициализацию приложения:
@@ -69,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_LAB1));
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_LAB32));
 
     MSG msg;
 
@@ -104,10 +105,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LAB1));
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LAB32));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_LAB1);
+    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_LAB32);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -544,6 +545,10 @@ void load_scene_objects(const std::string& filename)
         file >> x;
         file >> y;
         file >> z;
+        double alpha, beta, gamma;
+        file >> alpha;
+        file >> beta;
+        file >> gamma;
 
         faces_file.seekg(0, std::ios::beg);
         verticies_file.seekg(0, std::ios::beg);
@@ -599,19 +604,25 @@ void load_scene_objects(const std::string& filename)
 
             for (int i = 0; i < number_of_duplicates; i++)
             {
-                const auto init_position = point_double_3d{x,y,z};
+                const auto init_position = new point_double_3d{x,y,z};
+                const auto init_rotation = new point_double_3d{ alpha,beta,gamma };
 
 	            //Вносим новый объект в вектор объектов
-            	objects.push_back(
-					new model3d_impl(
-						verticies,
-						faces,
-						init_position
-					)
-				);
+                objects.push_back(
+                    new model3d_impl(
+	                    verticies,
+	                    faces,
+	                    *init_position,
+	                    *init_rotation
+                    ));
                 file >> x;
                 file >> y;
                 file >> z;
+                file >> alpha;
+                file >> beta;
+                file >> gamma;
+                delete init_position;
+                delete init_rotation;
             }
 
             verticies.clear();

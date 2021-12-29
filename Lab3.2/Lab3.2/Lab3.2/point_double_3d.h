@@ -33,7 +33,6 @@ public:
 	::point_double_3d& operator-();
 
 	double& operator[](const size_t i){
-
 		if (i == 0)
 		{
 			return x_;
@@ -42,9 +41,10 @@ public:
 		{
 			return y_;
 		}
-
-		return z_;
-
+		if (i == 2)
+		{
+			return z_;
+		}
 	}
 
 	point_double_3d operator+(const point_double_3d& position) const
@@ -53,6 +53,15 @@ public:
 		return
 			point_double_3d{x_ + position.x_, y_ + position.y_, z_ + position.z_};
 
+	}
+
+	point_double_3d& operator*=(const double x)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			(*this)[i] *= x;
+		}
+		return *this;
 	}
 
 	point_double_3d() : x_(0.0), y_(0.0), z_(0.0)

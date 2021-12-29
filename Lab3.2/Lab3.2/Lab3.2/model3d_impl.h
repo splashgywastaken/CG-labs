@@ -8,81 +8,73 @@ class model3d_impl final :
     public virtual model3d
 {
 
-	matrix<double> verticies_;
+	matrix<double> vertices_;
 	matrix<int> edges_;
 	matrix<int> faces_;
 
 	point_double_3d rotation_;
 	point_double_3d position_;
-	point_double_3d previous_position_;
 
 	matrix<int> get_edges();
 
 public:
+	model3d_impl* clone() const override
+	{
+		return new model3d_impl(*this);
+	}
 
 	model3d_impl(
-		const std::vector<std::vector<double>>& verticies,
+		const std::vector<std::vector<double>>& vertices,
 		const std::vector<std::vector<int>>& faces,
-		const point_double_3d& init_position_adjustment,
-		const point_double_3d& init_rotation_adjustment
-	) 
+		const point_double_3d init_position_adjustment,
+		const point_double_3d init_rotation_adjustment
+	) : rotation_(init_rotation_adjustment)
 	{
 
-		verticies_ = matrix<double>(verticies);
+		vertices_ = matrix<double>(vertices);
 		faces_ = matrix<int>(faces);
 		edges_ = matrix<int>(get_edges());
 
-		rotation_ = point_double_3d(0, 0, 0);
 
-		for (size_t i = 0; i < verticies_.m(); i++)
+		vertices_ = affine_transform::move(vertices_, init_position_adjustment);
+	
+		const double k = 1 / vertices[3][ faces_[0][0] ];
+		position_ = point_double_3d(
+			vertices_[0][ faces_[0][0] - static_cast<size_t>(1) ] * k,
+			vertices_[1][ faces_[0][0] - static_cast<size_t>(1) ] * k,
+			vertices_[2][ faces_[0][0] - static_cast<size_t>(1) ] * k
+		);
+
+		for (size_t i = 0; i < 3; i++)
 		{
-			const auto k = new double(verticies_[3][i]);
-
-			verticies_[0][i] += init_position_adjustment.x() * *k;
-			verticies_[1][i] += init_position_adjustment.y() * *k;
-			verticies_[2][i] += init_position_adjustment.z() * *k;
-
-			delete k;
+			//Перевод градусов в радианы
+			rotation_[i] *= PI/180;
 		}
 
-		const double k = 1 / verticies[0][3];
-		position_ = point_double_3d(
-			verticies_[0][0] * k,
-			verticies_[0][1] * k,
-			verticies_[0][2] * k
-		);
-
-		affine_transform::custom_rotation(
-			init_rotation_adjustment,
-			get_center() + position_,
-			verticies_
-		);
-
-		rotation_ += init_rotation_adjustment;
-
-		previous_position_ = point_double_3d(
-			verticies_[0][0] * k,
-			verticies_[0][1] * k,
-			verticies_[0][2] * k
-		);
+		if (rotation_[0] != 0.0 || rotation_[1] != 0.0 || rotation_[2] != 0.0) {
+			affine_transform::custom_rotation(
+				rotation_,
+				get_center(),
+				vertices_
+			);
+		}
+		
 	}
 
-	~model3d_impl() override
-	= default;
+	~model3d_impl() override;
 
-	model3d_impl(const model3d_impl& other) = default;
+	model3d_impl(const model3d_impl& other);
 
 	model3d_impl& operator=(const model3d_impl& other)
 	{
 		if (this == &other)
 			return *this;
 		model3d::operator =(other);
-		verticies_ = other.verticies_;
+		vertices_ = other.vertices_;
 		edges_ = other.edges_;
 		faces_ = other.faces_;
 		rotation_ = other.rotation_;
 		position_ = other.position_;
-		previous_position_ = other.previous_position_;
 		return *this;
 	}
 
@@ -91,12 +83,11 @@ public:
 		if (this == &other)
 			return *this;
 		model3d::operator =(other);
-		verticies_ = other.verticies_;
+		vertices_ = other.vertices_;
 		edges_ = other.edges_;
 		faces_ = other.faces_;
 		rotation_ = other.rotation_;
 		position_ = other.position_;
-		previous_position_ = other.previous_position_;
 		return *this;
 	}
 	
@@ -125,28 +116,21 @@ public:
 	{
 
 		point_double_3d center_point{ 0.0,0.0,0.0 };
-		const size_t n = verticies_.n();
+		const size_t m = vertices_.m();
 
 		double k;
-		double sum_x = 0;
-		double sum_y = 0;
-		double sum_z = 0;
 
-		for(size_t i = 0; i < n; i++)
+		for(size_t i = 0; i < m; i++)
 		{
-			k = 1.0 / verticies_[i][3];
-			sum_x += verticies_[i][0] * k;
-			sum_y += verticies_[i][1] * k;
-			sum_z += verticies_[i][2] * k;
+			k = 1.0 / vertices_[3][i];
+			center_point[0] += vertices_[0][i] * k;
+			center_point[1] += vertices_[1][i] * k;
+			center_point[2] += vertices_[2][i] * k;
 		}
 
-		k = 1.0 / n;
+		k = 1.0 / m;
 
-		center_point.set(
-			sum_x * k,
-			sum_y * k,
-			sum_z * k
-		);
+		center_point *= k;
 
 		return center_point;
 	}
