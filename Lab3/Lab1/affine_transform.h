@@ -5,31 +5,6 @@
 #include "PointDouble.h"
 #include "point_double_3d.h"
 #include "rotation_type_3d.h"
-#include "Logger.h"
-#include <fstream>
-
-constexpr double PI = 3.14159265;
-
-//Matrix<> Translation(double x, double y)
-//{
-//	double T[9] = {
-//		1, 0, x,
-//		0, 1, y,
-//		0, 0, 1};
-//	return Matrix<>(3, T);
-//}
-//
-// ����� ��������� ����������� �������, ������������ ������� ������� ��:
-// Identity() - ������������� ��;
-// Rotation(t) - ������� �� ���� t;
-// Rotation(c, s) - ������� �� ����, ������� � ����� �������� ��������������� ��������� c � s;
-// Scaling(kx, ky) - ���������������;
-// Mapping (��������� ���� ���������) - �� �������, ��� �������� ������ ��������� ����� ������������ ������� Scaling.
-//
-// � ���������� ������� ������������ ����������� ������� �� ������.
-// �������������� ���� � ������ �������� �������� ������.
-// ��������, ����� �������, ��������� ��������� �������,
-// � ����������� ���������������� ��������� � �������������.
 
 class affine_transform
 {
@@ -47,13 +22,15 @@ public:
 		if (rotation[0] != 0.0)
 		{
 			input_matrix = rotate(input_matrix, rotation_type_3d::abscissa, rotation[0]);
-		}
+		} 
 		if (rotation[1] != 0.0)
 		{
 			input_matrix = rotate(input_matrix, rotation_type_3d::ordinate, rotation[1]);
 		}
 		if (rotation[2] != 0.0)
+		{
 			input_matrix = rotate(input_matrix, rotation_type_3d::applicate, rotation[2]);
+		}
 		
 		input_matrix = move(input_matrix, -move_point);
 
@@ -63,70 +40,41 @@ public:
 
 	static matrix<double> rotation_by_edge(
 		matrix<double>& input_matrix,
-		const point_double_3d& init_rotation,
-		const double& rotation_radians,
-		int first_edge_vertex,
-		int second_edge_vertex
+		point_double_3d& move_vector,
+		point_double_3d& init_rotation,
+		point_double_3d& rotation_radians,
+		const int& first_edge_vertex,
+		const int& second_edge_vertex
 	)
 	{
-		///
-		/// 1 - переместить модель используя первую вершину ребра,
-		///	2 - повернуть её так, чтобы координаты ребра совпали с одной из осей
-		///	3 - второй пункт, но для другой оси
-		///	4 - основной поворот вокруг третьей оси
-		///	5 - обратный к 3
-		///	6 - обратный к 2
-		///	7 - обратный к 1
-		///
-		///	углы для 2 и 3 искать через отношения сторон (координат точек)
-		///
-		///	проверить по отдельности как работает каждый этап
-		///
+		auto const k = new double(1 / input_matrix[3][first_edge_vertex]);
+		point_double_3d edge_point = {
+			input_matrix[0][first_edge_vertex] * *k,
+			input_matrix[1][first_edge_vertex] * *k,
+			input_matrix[2][first_edge_vertex] * *k
+		};
 
-		first_edge_vertex -= 1;
-		second_edge_vertex -= 1;
 
-		//Перемещение модели в центр координат
-		auto k_1 = new double(1 / input_matrix[3][first_edge_vertex]);
-		auto k_2 = new double(1 / input_matrix[3][second_edge_vertex]);
-
-		point_double_3d* move_vector = new point_double_3d(
-			{
-				(input_matrix[0][first_edge_vertex] * *k_1 + input_matrix[0][second_edge_vertex] * *k_2) / 2,
-				(input_matrix[1][first_edge_vertex] * *k_1 + input_matrix[1][second_edge_vertex] * *k_2) / 2,
-				(input_matrix[2][first_edge_vertex] * *k_1 + input_matrix[2][second_edge_vertex] * *k_2) / 2
-			}
-		);
-
-		//Перемещение модели в центр координат
-		input_matrix = affine_transform::move(input_matrix, -*move_vector);
-
-		//Поворот отнистельно оси аппликат для "восстановления положения" модели относительно данной оси
-		input_matrix = affine_transform::rotate(input_matrix, rotation_type_3d::applicate, -init_rotation.z());
-
-		//Поворот отнистельно оси ординат для "восстановления положения" модели относительно данной оси
-		input_matrix = affine_transform::rotate(input_matrix, rotation_type_3d::ordinate, -init_rotation.y());
-
-		//поворот вокруг оси 
-		input_matrix = affine_transform::rotate(input_matrix, rotation_type_3d::abscissa, rotation_radians);
-
-		//Обратный поворот к повороту относительно оси ординат
-		input_matrix = affine_transform::rotate(input_matrix, rotation_type_3d::ordinate, init_rotation.y());
-
-		//Обратный поворот к повороту относительно оси аппликат
-		input_matrix = affine_transform::rotate(input_matrix, rotation_type_3d::applicate, init_rotation.z());
-
-		//Перемещение модели, обратное к перемещению в центр координат
-		input_matrix = affine_transform::move(input_matrix, -*move_vector);
-
-		delete move_vector;
-		delete k_1;
-		delete k_2;
 
 		return input_matrix;
 
 	}
-	
+
+	static matrix<double>& custom_scaling(
+		point_double scale,
+		double rotation_radian,
+		matrix<double> previous_point,
+		point_double centre_point,
+		matrix<double>& input_matrix
+	)
+	{
+		
+	}
+
+	//�������� �������������� ��� ���������� �������:
+
+	//���������� �������������� (��� ������������������ ����)
+	//������� �� ������ �(x,y,z)
 	static matrix<double> move(matrix<double>& input_matrix, const point_double_3d& vector)
 	{
 		const auto move_matrix = new matrix<double>(std::vector<std::vector<double>>
@@ -144,15 +92,13 @@ public:
 
 		return input_matrix;
 	}
-
+	//������� ������ ���� (�������, �������, ��������) �� ���� ��
 	static matrix<double> rotate(
 		matrix<double>& input_matrix,
 		const rotation_type_3d type,
-		double phi
+		const double phi
 	)
 	{
-
-		phi *= 3.14159265 / 180;
 
 		matrix<double> *rotation_matrix;
 
@@ -174,7 +120,7 @@ public:
 					({
 						{ cos(phi), -sin(phi), 0, 0},
 						{ sin(phi),  cos(phi), 0, 0},
-						{        0,         0, 1, 0},
+						{        0,         0, 0, 0},
 						{        0,         0, 0, 1}
 						})
 				);
@@ -208,9 +154,8 @@ public:
 		delete rotation_matrix;
 
 		return input_matrix;
-
 	}
-
+	//��������������� ����� ������������ ����
 	static matrix<double> scale(matrix<double>& input_matrix, const point_double_3d& scale_params)
 	{
 		const auto rotation_matrix = new matrix<double>(std::vector<std::vector<double>>
@@ -227,9 +172,8 @@ public:
 		delete rotation_matrix;
 
 		return input_matrix;
-
 	}
-
+	//��������� ������������ ���� � ����������
 	static matrix<double> mirror(matrix<double>& input_matrix, const mirror_type_3d& type)
 	{
 		matrix<double>* mirror_matrix;

@@ -81,7 +81,7 @@
     <ClInclude Include="axis_rotation_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Lab3\Lab1\affine_transform.h">
+    <ClInclude Include="affine_transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

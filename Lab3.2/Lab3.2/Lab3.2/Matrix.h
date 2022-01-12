@@ -85,7 +85,7 @@ public:
 
 	}
 
-	matrix(const size_t& n, const size_t& m) : matrix_(std::vector<std::vector<T>>(n, std::vector<T>(m)))
+	matrix(const size_t n, const size_t m) : matrix_(std::move(std::vector<std::vector<T>>(n, std::vector<T>(m))))
 	{
 	}
 

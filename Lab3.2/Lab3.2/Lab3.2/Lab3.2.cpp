@@ -35,6 +35,12 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+
+/*
+ *
+ * Поворот вокруг ребра / оси модели
+ *
+ */
 int draw_scene_objects(HDC dc);
 int load_camera(HDC dc);
 //int add_new_graph(const POINT& pos0, const std::string& graph_type, const PointDouble& params);
@@ -43,6 +49,7 @@ void load_scene_objects(const std::string& filename);
 void rotate_scene_model(HDC dc, model3d* obj, axis_rotation_type type);
 void mirror_scene_model(HDC dc, model3d* obj, mirror_type_3d);
 void rotate_scene_model(HDC dc, model3d* obj, rotation_type_3d rotation_type, double radians);
+void rotate_scene_model_by_edge(HDC dc, model3d* obj, double radians);
 void resize_scene_model(HDC dc, model3d* obj, double k);
 void resize_scene_model(HDC dc, model3d* obj, point_double_3d k);
 void move_scene_model(HDC dc, model3d* obj, double distance, direction direction);
@@ -265,7 +272,7 @@ LRESULT CALLBACK WndProc(
 
 			auto dc = GetDC(hWnd);
             constexpr double distance = 5.0;
-            const double radian = 1.0 - sqrt(3) / 2;
+            const double radian = 5;
 
 	        switch (wParam)
 		        {
@@ -276,7 +283,7 @@ LRESULT CALLBACK WndProc(
 			        {
 				        for (const auto& object : objects)
 				        {
-                            rotate_scene_model(dc, object, rotation_type_3d::ordinate, radian);
+                            rotate_scene_model(dc, object, rotation_type_3d::applicate, radian);
 				        }	                    
 			        }
 			        break;
@@ -285,7 +292,7 @@ LRESULT CALLBACK WndProc(
 	                {
                         for (const auto& object : objects)
                         {
-                            rotate_scene_model(dc, object, rotation_type_3d::ordinate, - radian);
+                            rotate_scene_model(dc, object, rotation_type_3d::applicate, -radian);
                         }
 	                }
                     break;
@@ -294,7 +301,7 @@ LRESULT CALLBACK WndProc(
                     {
                         for (const auto& object : objects)
                         {
-                            rotate_scene_model(dc, object, rotation_type_3d::abscissa, radian);
+                            rotate_scene_model(dc, object, rotation_type_3d::ordinate, radian);
                         }
                     }
                     break;
@@ -303,7 +310,7 @@ LRESULT CALLBACK WndProc(
                     {
                         for (const auto& object : objects)
                         {
-                            rotate_scene_model(dc, object, rotation_type_3d::abscissa, -radian);
+                            rotate_scene_model(dc, object, rotation_type_3d::ordinate, -radian);
                         }
                     }
 	        		break;
@@ -366,6 +373,27 @@ LRESULT CALLBACK WndProc(
                         }
 		            }
 	                break;
+
+                    //F
+                    case 0x46:
+                    {
+                        for (model3d* object : objects)
+                        {
+                            rotate_scene_model_by_edge(dc, object, -radian);
+                        }
+                    }
+                    break;
+
+					//R
+			        case 0x52:
+		            {
+			            for (model3d* object : objects)
+			            {
+                            rotate_scene_model_by_edge(dc, object, radian);
+			            }
+		            }
+	        		break;
+
 					//Отражение относительно координатных осей
 					//J
                     case 0x4A:
@@ -648,7 +676,7 @@ void mirror_scene_model(HDC dc, model3d* obj, mirror_type_3d mirror_type)
 
 void rotate_scene_model(HDC dc, model3d* obj, rotation_type_3d type)
 {
-	const double radian = sqrt(3)/2;
+	constexpr double radian = 60 * 180/PI;
     is_there_input = true;
 
     obj->rotate(dc, type, radian);
@@ -657,12 +685,17 @@ void rotate_scene_model(HDC dc, model3d* obj, rotation_type_3d type)
 void rotate_scene_model(
     HDC dc, 
     model3d* obj, 
-    const rotation_type_3d rotation_type, 
+    const rotation_type_3d rotation_type,
     const double radians
 )
 {
     is_there_input = true;
     obj->rotate(dc, rotation_type, radians);
+}
+
+void rotate_scene_model_by_edge(HDC dc, model3d* obj, const double radians)
+{
+	obj->rotate_by_edge(radians);
 }
 
 void move_scene_model(HDC dc, model3d* obj, double distance, const direction _direction)

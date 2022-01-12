@@ -117,7 +117,6 @@ public:
 		return *this;
 	}
 
-	//Ссылается на данные графика либо использует функцию ресайза самого графика для изменения его размеров 
 	int resize(double new_size, POINT screen_point);
 
 	void start_dragging(const point_double drag_point)

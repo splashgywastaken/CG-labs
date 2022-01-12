@@ -5,7 +5,6 @@
 #include "PointDouble.h"
 #include "point_double_3d.h"
 #include "rotation_type_3d.h"
-constexpr double PI = 3.14159265;
 
 class model3d
 {
@@ -26,6 +25,10 @@ public:
 	virtual void move(
 		HDC& dc, 
 		point_double_3d vector
+	) = 0;
+
+	virtual void rotate_by_edge(
+		double radian
 	) = 0;
 
 	virtual void rotate(

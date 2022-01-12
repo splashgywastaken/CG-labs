@@ -6,8 +6,8 @@
 void model3d_impl::draw(
 	const HDC& dc,
 	matrix<double>& world_to_projection_matrix,
-	point_double point_world0_in_screen,
-	point_double pixel_density
+	const point_double point_world0_in_screen,
+	const point_double pixel_density
 )
 {
 	
@@ -16,9 +16,9 @@ void model3d_impl::draw(
 
 	const auto size_n = new size_t(edges_.n());
 
-	for (size_t i = 0; i < *size_n; i++)
+	for (int i = 0; i < *size_n; i++)
 	{
-		for (size_t j = i; j < *size_n; j++)
+		for (int j = i; j < *size_n; j++)
 		{
 
 			if (edges_[i][j] == 1)
@@ -32,14 +32,6 @@ void model3d_impl::draw(
 					point_world0_in_screen,
 					pixel_density
 				);
-
-				/*draw_lines::connect_points(
-					dc,
-					point_double{ (*projection_matrix)[0][i], (*projection_matrix)[1][i]},
-					point_double{ (*projection_matrix)[0][j], (*projection_matrix)[1][j]},
-					point_world0_in_screen,
-					pixel_density
-				);*/
 
 				delete first_point_k;
 				delete second_point_k;
@@ -75,12 +67,15 @@ void model3d_impl::rotate(
 	const double radian
 )
 {
-	if (rotation_type == rotation_type_3d::self_abscissa || rotation_type == rotation_type_3d::self_ordinate || rotation_type == rotation_type_3d::self_applicate)
+
+	if (
+		rotation_type == rotation_type_3d::self_abscissa ||
+		rotation_type == rotation_type_3d::self_ordinate || 
+		rotation_type == rotation_type_3d::self_applicate
+		)
 	{
 
-		point_double_3d move_point = position_;
-
-		move_point += get_center();
+		point_double_3d	move_point = get_center();
 
 		vertices_ = affine_transform::move(vertices_, -move_point);
 		switch (rotation_type)
@@ -110,7 +105,43 @@ void model3d_impl::rotate(
 		vertices_ = affine_transform::rotate(vertices_, rotation_type, radian);
 	}
 
-	
+
+	if (rotation_type == rotation_type_3d::abscissa || rotation_type == rotation_type_3d::self_abscissa)
+	{
+		rotation_[0] += radian;
+	}
+	if (rotation_type == rotation_type_3d::ordinate || rotation_type == rotation_type_3d::self_ordinate)
+	{
+		rotation_[1] += radian;
+	}
+	if (rotation_type == rotation_type_3d::applicate || rotation_type == rotation_type_3d::self_applicate)
+	{
+		rotation_[2] += radian;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+
+		if (rotation_[i] >= 360)
+		{
+			rotation_[i] = static_cast<int>(rotation_[i]) % 360;
+		}
+
+	}
+
+}
+
+void model3d_impl::rotate_by_edge(double radian)
+{
+
+	vertices_ = affine_transform::rotation_by_edge(
+		vertices_,
+		rotation_,
+		radian,
+		1,
+		5
+	);
+
 }
 
 void model3d_impl::mapping(

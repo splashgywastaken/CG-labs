@@ -1,6 +1,7 @@
 #ifndef VECTOR_3D_H
 #define VECTOR_3D_H
 #include <cmath>
+#include "point_double_3d.h"
 
 class vector_3d
 {

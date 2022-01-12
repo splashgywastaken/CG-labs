@@ -7,7 +7,7 @@ class logger
 	
 public:
 	template<typename T>
-	static void log(std::ostream& out, T obj, const std::string& name)
+	static void log(std::ostream& out, T obj, const std::string name)
 	{
 		out << name;
 		out << std::endl;

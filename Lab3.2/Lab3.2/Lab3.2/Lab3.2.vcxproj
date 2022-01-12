@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Lab3\Lab1\affine_transform.h" />
+    <ClInclude Include="affine_transform.h" />
     <ClInclude Include="axis_rotation_type.h" />
     <ClInclude Include="camera_3d.h" />
     <ClInclude Include="convert_fucntions.h" />

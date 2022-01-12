@@ -45,12 +45,6 @@ public:
 			vertices_[2][ faces_[0][0] - static_cast<size_t>(1) ] * k
 		);
 
-		for (size_t i = 0; i < 3; i++)
-		{
-			//Перевод градусов в радианы
-			rotation_[i] *= PI/180;
-		}
-
 		if (rotation_[0] != 0.0 || rotation_[1] != 0.0 || rotation_[2] != 0.0) {
 			affine_transform::custom_rotation(
 				rotation_,
@@ -107,6 +101,8 @@ public:
 		rotation_type_3d rotation_type,
 		double radian
 	) override;
+
+	void rotate_by_edge(double radian) override;
 
 	void mapping(HDC& dc, mirror_type_3d mirror_type) override;
 
