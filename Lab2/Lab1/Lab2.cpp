@@ -328,6 +328,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         
 	                }
 	        		break;
+
+			        case 0x43:
+		            {
+
+
+
+		            }
+	        		break;
+
+					
 	                //D, а = (1, 0)
 	                case 0x44:
                     {

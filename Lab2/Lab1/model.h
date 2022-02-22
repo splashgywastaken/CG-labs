@@ -19,6 +19,7 @@ public:
 	virtual void rotate(HDC dc, POINT rotation_type) = 0;
 	virtual void rotate(HDC dc, double radian) = 0;
 	virtual void rotate(HDC dc, double cos, double sin) = 0;
+	virtual void custom_affine(HDC dc) = 0;
 
 };
 

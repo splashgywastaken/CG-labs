@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков\Interface">
+      <UniqueIdentifier>{445f967f-9cfb-468e-a639-b12425c55640}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Interface">
+      <UniqueIdentifier>{14dc419e-ce65-49a4-b5ec-90da3aec52ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Entity">
+      <UniqueIdentifier>{1cb167cb-6d1d-43ca-9376-d74a86be627a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Entity">
+      <UniqueIdentifier>{a305accb-30db-41d8-abcc-472017166851}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\main">
+      <UniqueIdentifier>{3955a885-a04e-4a17-957b-0553e7e5ca81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\main">
+      <UniqueIdentifier>{690888e7-d21d-467b-97ab-53ce624a0654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Service">
+      <UniqueIdentifier>{78faa0a4-35af-4265-a911-3ca0de7e0f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Service\Enums">
+      <UniqueIdentifier>{537d3fa8-038e-4877-a92a-1972a536a5c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Service\Structs">
+      <UniqueIdentifier>{06152fda-1c5c-44aa-9090-a6f8e05aec1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Service\Helper classes">
+      <UniqueIdentifier>{b521dee1-739a-4746-9ed9-3c84a275cd04}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_object.h">
+      <Filter>Файлы заголовков\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Lab2.h">
+      <Filter>Файлы заголовков\main</Filter>
+    </ClInclude>
+    <ClInclude Include="graph_types.h">
+      <Filter>Исходные файлы\Service\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="PointDouble.h">
+      <Filter>Исходные файлы\Service\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="convert_fucntions.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
+    <ClInclude Include="affine_transform.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>Файлы заголовков\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_lines.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
+    <ClInclude Include="direction.h">
+      <Filter>Исходные файлы\Service\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="axis_rotation_type.h">
+      <Filter>Исходные файлы\Service\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="point_double_3d.h">
+      <Filter>Исходные файлы\Service\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="model3d.h">
+      <Filter>Файлы заголовков\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_3d.h">
+      <Filter>Файлы заголовков\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="convert_functions_3d.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
+    <ClInclude Include="rotation_type_3d.h">
+      <Filter>Исходные файлы\Service\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="model3d_impl.h">
+      <Filter>Файлы заголовков\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="mirror_type_3d.h">
+      <Filter>Исходные файлы\Service\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="vector_3d.h">
+      <Filter>Исходные файлы\Service\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Исходные файлы\Service\Helper classes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="scene_object.cpp">
+      <Filter>Исходные файлы\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Lab2.cpp">
+      <Filter>Исходные файлы\main</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_3d.cpp">
+      <Filter>Исходные файлы\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="model3d_impl.cpp">
+      <Filter>Исходные файлы\Entity</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Lab1.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Lab1.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="objects.txt">
+      <Filter>Исходные файлы\Service</Filter>
+    </Text>
+    <Text Include="vertices_file.txt">
+      <Filter>Исходные файлы\Service</Filter>
+    </Text>
+    <Text Include="faces_file.txt">
+      <Filter>Исходные файлы\Service</Filter>
+    </Text>
+    <Text Include="temporary_storage.txt">
+      <Filter>Исходные файлы\Service</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

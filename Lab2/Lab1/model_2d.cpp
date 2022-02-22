@@ -97,6 +97,13 @@ void model_2d::rotate(HDC dc, double cos, double sin)
 
 }
 
+void model_2d::custom_affine(HDC dc)
+{
+
+
+
+}
+
 point_double model_2d::get_centre()
 {
 	return

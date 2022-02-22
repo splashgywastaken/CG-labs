@@ -58,6 +58,7 @@ public:
 	void rotate(HDC dc, double radian) override;
 	void custom_rotate(HDC dc, double radian);
 	void rotate(HDC dc, double cos, double sin) override;
+	void custom_affine(HDC dc) override;
 private:
 	point_double get_centre();
 	double get_avg_x();

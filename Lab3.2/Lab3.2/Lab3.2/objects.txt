@@ -1,0 +1,7 @@
+vertices_file.txt
+faces_file.txt
+cube
+1
+
+0 0 0
+0 0 0
